@@ -2,12 +2,12 @@ package model;
 
 public class User {
     private String cin;
-    private String nom;
+    private String name;
     private  int age;
 
-    public User(String cin, String nom, int age) {
+    public User(String cin, String name, int age) {
         this.cin = cin;
-        this.nom = nom;
+        this.name = name;
         this.age = age;
     }
 
@@ -21,12 +21,12 @@ public class User {
         this.cin = cin;
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getAge() {
@@ -41,7 +41,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "cin='" + cin + '\'' +
-                ", nom='" + nom + '\'' +
+                ", name='" + name + '\'' +
                 ", age=" + age +
                 '}';
     }

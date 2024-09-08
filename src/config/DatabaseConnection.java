@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static Connection connection;
+    private static Connection connection = null;
     public DatabaseConnection() throws SQLException {
         try {
             String password = "";
@@ -17,10 +17,13 @@ public class DatabaseConnection {
         }
     }
 
-    public static Connection getConnection() {
+    public static Connection getConnection()throws SQLException  {
+        if(connection==null) {
+            connection= (Connection) new DatabaseConnection();
+        }
         return connection;
     }
-    public static void closeConnection(){
+    public void closeConnection(){
         closeConnection();
     }
 }
