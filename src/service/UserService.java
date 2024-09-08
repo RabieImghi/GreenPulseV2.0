@@ -12,6 +12,8 @@ public class UserService {
 
     public void addUser(){
             User user = new User("aa","aaaa",21);
+            if(userRepository.userExist(("aa"))) System.out.println("user exist");
+            else
             userRepository.addUser(user);
     }
 

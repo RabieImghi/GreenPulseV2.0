@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class UserRepository {
     private final UserDAO userDAO = new UserDAO();
-    public UserRepository() throws SQLException {}
+    public UserRepository() {}
 
     public void addUser(User user){
         userDAO.addUser(user);

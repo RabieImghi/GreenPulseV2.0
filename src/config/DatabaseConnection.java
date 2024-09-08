@@ -5,26 +5,32 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static Connection connection = null;
-    public DatabaseConnection() throws SQLException {
+    private static DatabaseConnection instance;
+    private Connection connection;
+    private DatabaseConnection() {
         try {
             String password = "";
             String user = "GreenPulse";
             String url = "jdbc:postgresql://localhost:5432/postgres";
             connection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            throw new SQLException("Failed to create a database connection.");
+        } catch (Exception e) {
+            System.out.println("Error : "+e.getMessage());
         }
     }
-
-    public static Connection getConnection()throws SQLException  {
-        if(connection==null) {
-            connection= (Connection) new DatabaseConnection();
+    public static DatabaseConnection getInstance(){
+        if (instance == null) {
+            instance = new DatabaseConnection();
         }
+        return instance;
+    }
+    public Connection getConnection() {
         return connection;
     }
     public void closeConnection(){
-        closeConnection();
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
-

@@ -10,8 +10,8 @@ import java.sql.SQLException;
 public class UserDAO {
     private final Connection connection;
 
-    public UserDAO() throws SQLException {
-        this.connection = DatabaseConnection.getConnection();
+    public UserDAO(){
+        this.connection = DatabaseConnection.getInstance().getConnection();
     }
     public void addUser(User user){
         String smt = "INSERT INTO users (id,cin,name,age) VALUES (?,?,?,?)";
