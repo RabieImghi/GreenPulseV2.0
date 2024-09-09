@@ -2,14 +2,17 @@ package service;
 
 import domain.User;
 import repository.UserRepository;
+
+import java.util.Optional;
 import java.util.Scanner;
 
 public class UserService {
     private final UserRepository userRepository = new UserRepository();
-    public static Scanner scanner = new Scanner(System.in);
-    public static int tempAge = 0;
-    public static String tempCin;
-    public static String tempName;
+    private Scanner scanner = new Scanner(System.in);
+    private int tempAge = 0;
+    private String tempCin;
+    private String tempName;
+    private Optional<User> user;
     //public static String defaultEntre;
 
     public UserService(){}
@@ -35,18 +38,41 @@ public class UserService {
             }
         } while (tempAge == 0);
         User user = new User(tempCin,tempName,tempAge);
-        userRepository.addUser(user);
+        Optional<User> optionalUser = userRepository.addUser(user);
+        optionalUser.ifPresent(System.out::println);
         return true;
     }
-    public void updateUser(String cin){
-        User user = new User("bbb","bbbbb",3333);
-        if(userRepository.userExist("ub")) System.out.println("User CIN Already Exist");
-        else  userRepository.updateUser(user,cin);
+    public Optional<User> updateUser(String cin){
+        user = userRepository.finUserById(cin);
+        user.ifPresent((user1 -> {
+            System.out.print("Give me your name : ");
+            tempName=scanner.nextLine();
+            user1.setName(tempName);
+            do {
+                System.out.print("Give me your Age: ");
+                String input = scanner.nextLine();
+                try {
+                    tempAge = Integer.parseInt(input);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid Age, please enter a valid integer.");
+                    tempAge = 0;
+                }
+            } while (tempAge == 0);
+            user1.setAge(tempAge);
+            user = userRepository.updateUser(user1);
+        }));
+        return user;
     }
     public void deleteUser(String cin){
-        if(userRepository.userExist(cin))
-            userRepository.deleteUser(cin);
-        else System.out.println("User Not Found");
+        userRepository.finUserById(cin).ifPresentOrElse(user->{
+            Optional<User> userDeleted = userRepository.deleteUser(cin);
+            userDeleted.ifPresent(user1->{
+                System.out.println("User Deleted Is : ");
+                System.out.println(user1.toString());
+            });
+        },()->{
+            System.out.println("User Not Found");
+        });
     }
 
 }

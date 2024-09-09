@@ -1,6 +1,8 @@
+import domain.User;
 import service.MainService;
 import service.UserService;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Main {
@@ -19,6 +21,18 @@ public class Main {
                     functionReturn = userService.addUser();
                     if (!functionReturn) break;
                 } break;
+                case "2": {
+                    System.out.print("Give me CIN : ");
+                    Optional<User> user = userService.updateUser(scanner.nextLine());
+                    user.ifPresent((user1 ->{
+                        System.out.println(user1.toString());
+                    }));
+
+                }break;
+                case "3": {
+                    System.out.print("Give me CIN : ");
+                    userService.deleteUser(scanner.nextLine());
+                }
                 case "7": break;
                 default : System.out.println("Invalid option, please try again.");
             }

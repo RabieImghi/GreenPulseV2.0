@@ -25,4 +25,15 @@ public class MainService {
                 "\n|===========================================|" +
                 "\nEntre your option : ");
     }
+    public static void displayMenuUserUpdate(){
+        System.out.print(
+                "\n|=======================================|" +
+                "\n| Select an option please :             |" +
+                "\n|=======================================|"+
+                "\n| 1 : Update User Information           |" +
+                "\n| 2 : Update Carbon Consumption         |" +
+                "\n| 5 : Close                             |" +
+                "\n|=======================================|" +
+                "\nEntre your option : ");
+    }
 }
