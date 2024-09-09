@@ -15,13 +15,12 @@ public class UserRepository {
     }
 
     public void addUser(User user){
-        String smt = "INSERT INTO users (id,cin,name,age) VALUES (?,?,?,?)";
+        String smt = "INSERT INTO users (cin,name,age) VALUES (?,?,?)";
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(smt);
-            preparedStatement.setInt(1,3);
-            preparedStatement.setString(2,user.getCin());
-            preparedStatement.setString(3,user.getName());
-            preparedStatement.setInt(4, user.getAge());
+            preparedStatement.setString(1,user.getCin());
+            preparedStatement.setString(2,user.getName());
+            preparedStatement.setInt(3, user.getAge());
             int rowsInserted = preparedStatement.executeUpdate();
             if(rowsInserted > 0)   System.out.println("user added with success");
         } catch (SQLException e) {
