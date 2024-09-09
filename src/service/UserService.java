@@ -17,7 +17,7 @@ public class UserService {
 
     public UserService(){}
 
-    public boolean addUser(){
+    public boolean save(){
         boolean userCinExist = false;
         do{
             System.out.print("Give me your Cin : ");
@@ -38,12 +38,12 @@ public class UserService {
             }
         } while (tempAge == 0);
         User user = new User(tempCin,tempName,tempAge);
-        Optional<User> optionalUser = userRepository.addUser(user);
+        Optional<User> optionalUser = userRepository.save(user);
         optionalUser.ifPresent(System.out::println);
         return true;
     }
-    public Optional<User> updateUser(String cin){
-        user = userRepository.finUserById(cin);
+    public Optional<User> update(String cin){
+        user = userRepository.findById(cin);
         user.ifPresent((user1 -> {
             System.out.print("Give me your name : ");
             tempName=scanner.nextLine();
@@ -59,13 +59,13 @@ public class UserService {
                 }
             } while (tempAge == 0);
             user1.setAge(tempAge);
-            user = userRepository.updateUser(user1);
+            user = userRepository.update(user1);
         }));
         return user;
     }
-    public void deleteUser(String cin){
-        userRepository.finUserById(cin).ifPresentOrElse(user->{
-            Optional<User> userDeleted = userRepository.deleteUser(cin);
+    public void delete(String cin){
+        userRepository.findById(cin).ifPresentOrElse(user->{
+            Optional<User> userDeleted = userRepository.delete(cin);
             userDeleted.ifPresent(user1->{
                 System.out.println("User Deleted Is : ");
                 System.out.println(user1.toString());

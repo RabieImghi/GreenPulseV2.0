@@ -16,7 +16,7 @@ public class UserRepository {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
-    public Optional<User> addUser(User user){
+    public Optional<User> save(User user){
         String smt = "INSERT INTO users (cin,name,age) VALUES (?,?,?)";
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(smt);
@@ -30,7 +30,7 @@ public class UserRepository {
         }
         return  Optional.of(user);
     }
-    public Optional<User> finUserById(String cin){
+    public Optional<User> findById(String cin){
         String stm2 = "SELECT * FROM users WHERE cin = ?";
         Optional<User> user = Optional.empty();
         try {
@@ -48,7 +48,7 @@ public class UserRepository {
 
 
     }
-    public Optional<User> updateUser(User user){
+    public Optional<User> update(User user){
         String smt = "UPDATE users SET name = ?, age = ? WHERE cin = ?";
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(smt);
@@ -62,9 +62,8 @@ public class UserRepository {
         }
         return  Optional.of(user);
     }
-
-    public Optional<User> deleteUser(String cin){
-        Optional<User> user = finUserById(cin);
+    public Optional<User> delete(String cin){
+        Optional<User> user = findById(cin);
         String stmDelete = "DELETE FROM users WHERE cin = ?";
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(stmDelete);
