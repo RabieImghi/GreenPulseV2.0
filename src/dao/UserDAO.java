@@ -22,8 +22,22 @@ public class UserDAO {
             preparedStatement.setString(3,user.getName());
             preparedStatement.setInt(4, user.getAge());
             int rowsInserted = preparedStatement.executeUpdate();
-            if(rowsInserted > 0)   System.out.println("user added avec succes");
+            if(rowsInserted > 0)   System.out.println("user added with success");
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void updateUser(User user,String cin){
+        String smt = "UPDATE users SET cin = ?, name = ?, age = ? WHERE cin = ?";
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement(smt);
+            preparedStatement.setString(1,user.getCin());
+            preparedStatement.setString(2,user.getName());
+            preparedStatement.setInt(3,user.getAge());
+            preparedStatement.setString(4,cin);
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) System.out.println("user updated with success");
+        }catch (SQLException e){
             e.printStackTrace();
         }
     }

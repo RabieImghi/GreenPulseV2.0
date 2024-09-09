@@ -12,6 +12,9 @@ public class UserRepository {
     public void addUser(User user){
         userDAO.addUser(user);
     }
+    public void updateUser(User user, String cin){
+        userDAO.updateUser(user,cin);
+    }
     public boolean userExist(String cin){
         return userDAO.userExist(cin);
     }

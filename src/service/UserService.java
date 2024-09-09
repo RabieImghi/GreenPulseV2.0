@@ -12,9 +12,13 @@ public class UserService {
 
     public void addUser(){
             User user = new User("aa","aaaa",21);
-            if(userRepository.userExist(("aa"))) System.out.println("user exist");
-            else
-            userRepository.addUser(user);
+            if(userRepository.userExist(("aa"))) System.out.println("User CIN Already Exist");
+            else userRepository.addUser(user);
+    }
+    public void updateUser(String cin){
+        User user = new User("bbb","bbbbb",3333);
+        if(userRepository.userExist("bbb")) System.out.println("User CIN Already Exist");
+        else  userRepository.updateUser(user,cin);
     }
 
 }
