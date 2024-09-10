@@ -1,5 +1,6 @@
 package repository;
 
+import Util.TypeOfConsumption;
 import config.DatabaseConnection;
 import domain.Consumption;
 import domain.User;
@@ -16,20 +17,29 @@ public class ConsumptionRepository {
     public ConsumptionRepository(){
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
-    public Optional<Consumption> save(Consumption consumption, String cin){
-        String stmSave= "INSERT INTO consumptions (start_date, end_date,carbon_consumption,user_cin ) VALUES (?,?,?,?)";
+    public Optional<Consumption> save(Consumption consumption){
+        String stmSave= "INSERT INTO consumptions (start_date, end_date,carbon_consumption,user_cin,type_impact) VALUES (?,?,?,?,?)";
         Optional<Consumption> consumptionOptional = Optional.empty();
         try {
-            PreparedStatement preparedStatement = this.connection.prepareStatement(stmSave);
+            PreparedStatement preparedStatement = this.connection.prepareStatement(stmSave, PreparedStatement.RETURN_GENERATED_KEYS);
             preparedStatement.setDate(1, java.sql.Date.valueOf(consumption.getStartDate()));
-            preparedStatement.setDate(2,java.sql.Date.valueOf(consumption.getEndDate()));
-            preparedStatement.setDouble(3,consumption.getCarbon());
-            preparedStatement.setString(4,cin);
+            preparedStatement.setDate(2, java.sql.Date.valueOf(consumption.getEndDate()));
+            preparedStatement.setDouble(3, consumption.getCarbon());
+            preparedStatement.setString(4, consumption.getUser().getCin());
+            preparedStatement.setString(5, String.valueOf(consumption.getTypeOfConsumption()));
             int resultOfInsert = preparedStatement.executeUpdate();
-            if(resultOfInsert > 0) return consumptionOptional = Optional.of(consumption);
-
-        }catch (Exception e){
-            System.out.println("Error on save consumption : "+e.getMessage());
+            if (resultOfInsert > 0) {
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int id = generatedKeys.getInt(1);
+                    consumption.setId(id);
+                    return Optional.of(consumption);
+                } else {
+                    System.out.println("No generated key returned.");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error on save consumption: " + e.getMessage());
         }
         return consumptionOptional;
     }
@@ -41,7 +51,8 @@ public class ConsumptionRepository {
             preparedStatement.setString(1,user.getCin());
             ResultSet result = preparedStatement.executeQuery();
             while (result.next()){
-                listConsumption.add(new Consumption(result.getDate("start_date").toLocalDate(),result.getDate("end_date").toLocalDate(),result.getDouble("carbon_consumption")));
+                TypeOfConsumption consumptionType = TypeOfConsumption.valueOf(result.getString("consumption_type"));
+                listConsumption.add(new Consumption(result.getDate("start_date").toLocalDate(),result.getDate("end_date").toLocalDate(),result.getDouble("carbon_consumption"),consumptionType));
             }
         }catch (Exception e){
             System.out.println("Error on get all consumptions : "+e.getMessage());

@@ -25,6 +25,47 @@ public class MainService {
                 "\n|===========================================|" +
                 "\nEntre your option : ");
     }
+    public static void displayMenuImpact(){
+        System.out.print(
+                        "\n|===========================================|" +
+                        "\n| Select an option of impact :              |" +
+                        "\n|===========================================|"+
+                        "\n| 1 : Transport                             |" +
+                        "\n| 2 : Housing                               |" +
+                        "\n| 3 : Food                                  |" +
+                        "\n|===========================================|" +
+                        "\nEntre your option : ");
+    }
+    public static void displayMenuImpactTransport(){
+        System.out.print(
+                "\n|===========================================|" +
+                "\n| Select an option of impact :              |" +
+                "\n|===========================================|"+
+                "\n| 1 : Car                                   |" +
+                "\n| 3 : Train                                 |" +
+                "\n|===========================================|" +
+                "\nEntre your option : ");
+    }
+    public static void displayMenuImpactFood(){
+        System.out.print(
+                "\n|===========================================|" +
+                "\n| Select an option of impact :              |" +
+                "\n|===========================================|"+
+                "\n| 1 : Meat                                  |" +
+                "\n| 2 : Vegetables                            |" +
+                "\n|===========================================|" +
+                "\nEntre your option : ");
+    }
+    public static void displayMenuImpactHousing(){
+        System.out.print(
+                "\n|===========================================|" +
+                "\n| Select an option of impact :              |" +
+                "\n|===========================================|"+
+                "\n| 1 : Gas                                   |" +
+                "\n| 2 : Electricity                           |" +
+                "\n|===========================================|" +
+                "\nEntre your option : ");
+    }
     public static void displayMenuUserUpdate(){
         System.out.print(
                 "\n|=======================================|" +

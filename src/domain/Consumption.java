@@ -1,17 +1,38 @@
 package domain;
 
+import Util.TypeOfConsumption;
+
 import java.time.LocalDate;
 
 public class Consumption {
+    private int id;
     private LocalDate startDate;
     private LocalDate endDate;
     private double carbon;
+    private TypeOfConsumption typeOfConsumption;
     private User user;
 
-    public Consumption(LocalDate startDate, LocalDate endDate, double carbon) {
+    public Consumption(LocalDate startDate, LocalDate endDate, double carbon,TypeOfConsumption typeOfConsumption) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.carbon = carbon;
+        this.typeOfConsumption = typeOfConsumption;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public TypeOfConsumption getTypeOfConsumption() {
+        return typeOfConsumption;
+    }
+
+    public void setTypeOfConsumption(TypeOfConsumption typeOfConsumption) {
+        this.typeOfConsumption = typeOfConsumption;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LocalDate getStartDate() {
@@ -51,6 +72,7 @@ public class Consumption {
                 ", endDate=" + endDate +
                 ", carbon=" + carbon +
                 ", user=" + user +
+                ", typeOfConsumption=" + typeOfConsumption +
                 '}';
     }
 }

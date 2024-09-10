@@ -17,11 +17,11 @@ public class ConsumptionService {
     private UserRepository userRepository = new UserRepository();
     private Scanner scanner = new Scanner(System.in);
     String tempCin;
-    public Optional<Consumption> save(LocalDate tempStartDate,LocalDate tempEndDate,Double tempCarVal,String cin){
+   /* public Optional<Consumption> save(LocalDate tempStartDate,LocalDate tempEndDate,Double tempCarVal,String cin){
         Optional<Consumption> consumption = Optional.empty();
-        consumption = consumptionRepository.save(new Consumption(tempStartDate,tempEndDate,tempCarVal),cin);
+        consumption = consumptionRepository.save(new Consumption(tempStartDate,tempEndDate,tempCarVal));
         return consumption;
-    }
+    }*/
     public List<LocalDate> dateListRange(List<Consumption> listDate){
         List<LocalDate> dateListRange = new ArrayList<>();
         for(Consumption consumption : listDate){
