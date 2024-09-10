@@ -35,9 +35,10 @@ public class ConsumptionRepository {
     }
     public List<Consumption> getAllConsumption(User user){
         List<Consumption> listConsumption = new ArrayList<>();
-        String stmGetList = "SELECT * FROM consumptions";
+        String stmGetList = "SELECT * FROM consumptions WHERE user_cin = ?";
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(stmGetList);
+            preparedStatement.setString(1,user.getCin());
             ResultSet result = preparedStatement.executeQuery();
             while (result.next()){
                 listConsumption.add(new Consumption(result.getDate("start_date").toLocalDate(),result.getDate("end_date").toLocalDate(),result.getDouble("carbon_consumption")));

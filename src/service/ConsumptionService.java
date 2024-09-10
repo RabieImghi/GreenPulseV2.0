@@ -17,34 +17,12 @@ public class ConsumptionService {
     private UserRepository userRepository = new UserRepository();
     private Scanner scanner = new Scanner(System.in);
     String tempCin;
-    public Optional<Consumption> save(){
+    public Optional<Consumption> save(LocalDate tempStartDate,LocalDate tempEndDate,Double tempCarVal,String cin){
         Optional<Consumption> consumption = Optional.empty();
-        System.out.println("Give me Cin : ");
-        tempCin = scanner.nextLine();
-        userRepository.findById(tempCin).ifPresentOrElse(user -> {
-            LocalDate tempStartDate;
-            LocalDate tempEndDate;
-            boolean isExist;
-            do{
-                List<LocalDate> dateListRange = new ArrayList<>();
-                System.out.print("Give me new start date : ");
-                tempStartDate = LocalDate.parse(scanner.nextLine());
-                System.out.print("Give me new end date : ");
-                tempEndDate = LocalDate.parse(scanner.nextLine());
-                dateListRange = dateListRange(getAllConsumption(user));
-                isExist = DateValidator.isThisDateValid(dateListRange,tempStartDate,tempEndDate);
-                if(isExist) System.out.println("This Date Already Exist Try Another Date !");
-            }while (isExist);
-            System.out.print("Give me Carbon : ");
-            double tempCarVal = scanner.nextDouble();
-            consumptionRepository.save(new Consumption(tempStartDate,tempEndDate,tempCarVal),user.getCin());
-
-        },()->{
-            System.out.println("user not found");
-        });
+        consumption = consumptionRepository.save(new Consumption(tempStartDate,tempEndDate,tempCarVal),cin);
         return consumption;
     }
-    public static List<LocalDate> dateListRange(List<Consumption> listDate){
+    public List<LocalDate> dateListRange(List<Consumption> listDate){
         List<LocalDate> dateListRange = new ArrayList<>();
         for(Consumption consumption : listDate){
             for(LocalDate dateTest = consumption.getStartDate(); !dateTest.isAfter(consumption.getEndDate()); dateTest=dateTest.plusDays(1)){

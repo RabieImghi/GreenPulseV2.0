@@ -1,8 +1,13 @@
+import Util.DateValidator;
+import domain.Consumption;
 import domain.User;
 import service.ConsumptionService;
 import service.MainService;
 import service.UserService;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -28,18 +33,15 @@ public class Main {
                     });
                 } break;
                 case "2": {
-                    System.out.print("Give me CIN : ");
-                    Optional<User> user = userService.update(scanner.nextLine());
-                    user.ifPresent((System.out::println));
-
+                    updateUser();
                 }break;
                 case "3": {
                     System.out.print("Give me CIN : ");
                     userService.delete(scanner.nextLine());
                 } break;
                 case "4": {
-                    consumptionService.save();
-                }
+                    saveConsumption();
+                }break;
                 case "7": break;
                 default : System.out.println("Invalid option, please try again.");
             }
@@ -77,4 +79,56 @@ public class Main {
         else optionalUser=Optional.empty();
         return optionalUser;
     }
+    public static void updateUser(){
+        System.out.print("Give me CIN : ");
+        Optional<User> user = userService.findById(scanner.nextLine());
+        user.ifPresentOrElse(user1 -> {
+            int tempAge;
+            System.out.print("Give me your name : ");
+            String tempName = scanner.nextLine();
+            user1.setName(tempName);
+            do{
+                System.out.print("Give me your Age: ");
+                String input = scanner.nextLine();
+                try {
+                    tempAge = Integer.parseInt(input);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid Age, please enter a valid integer.");
+                    tempAge = 0;
+                }
+            } while (tempAge == 0);
+            user1.setAge(tempAge);
+            Optional<User> userUpdated = userService.update(user1);
+            userUpdated.ifPresent((System.out::println));
+        },()->{
+            System.out.println("User Not Exist");
+        });
+    }
+    public static void saveConsumption(){
+        System.out.println("Give me Cin : ");
+        String tempCin = scanner.nextLine();
+        Optional<User> userOptional = userService.findById(tempCin);
+        userOptional.ifPresentOrElse(user -> {
+            LocalDate tempStartDate;
+            LocalDate tempEndDate;
+            boolean isExist;
+            do{
+                List<LocalDate> dateListRange = new ArrayList<>();
+                System.out.print("Give me new start date : ");
+                tempStartDate = LocalDate.parse(scanner.nextLine());
+                System.out.print("Give me new end date : ");
+                tempEndDate = LocalDate.parse(scanner.nextLine());
+                dateListRange = consumptionService.dateListRange(consumptionService.getAllConsumption(user));
+                isExist = DateValidator.isThisDateValid(dateListRange,tempStartDate,tempEndDate);
+                if(isExist) System.out.println("This Date Already Exist Try Another Date !");
+            }while (isExist);
+            System.out.print("Give me Carbon : ");
+            double tempCarVal = scanner.nextDouble();
+            Optional<Consumption> consumption= consumptionService.save(tempStartDate,tempEndDate,tempCarVal,user.getCin());
+            consumption.ifPresent(consumption1 -> System.out.println("Consumption added with success"));
+        },()->{
+            System.out.println("user not found");
+        });
+    }
+
 }
