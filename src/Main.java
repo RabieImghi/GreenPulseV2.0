@@ -20,8 +20,12 @@ public class Main {
             String option = scanner.nextLine();
             switch (option){
                 case "1": {
-                    functionReturn = userService.save();
-                    if (!functionReturn) break;
+                    Optional<User> functionReturn = saveUser();
+                    functionReturn.ifPresentOrElse(user -> {
+                        System.out.println("User Added : "+user.toString());
+                    },()->{
+                        System.out.println("User Not add");
+                    });
                 } break;
                 case "2": {
                     System.out.print("Give me CIN : ");
@@ -40,5 +44,37 @@ public class Main {
                 default : System.out.println("Invalid option, please try again.");
             }
         }while (!optionsEnd);
+    }
+    public static Optional<User> saveUser(){
+        String tempCin;
+        String tempName;
+        int tempAge;
+        boolean userCinExist = false;
+        boolean userAgeTest = false;
+        do{
+            System.out.print("Give me your Cin : ");
+            tempCin=scanner.nextLine();
+            userCinExist = userService.userExist(tempCin);
+            if(userCinExist) System.out.println("User CIN Already Exist");
+        }while (userCinExist);
+        System.out.print("Give Me Your Name : ");
+        tempName = scanner.nextLine();
+        do {
+            System.out.print("Give me your Age: ");
+            String input = scanner.nextLine();
+            try {
+                tempAge = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid Age, please enter a valid integer.");
+                tempAge = 0;
+            }
+        } while (tempAge == 0);
+        User user = new User(tempCin,tempName,tempAge);
+        boolean userSaved = userService.save(user);
+        Optional<User> optionalUser;
+
+        if(userSaved) optionalUser = Optional.of(user);
+        else optionalUser=Optional.empty();
+        return optionalUser;
     }
 }
