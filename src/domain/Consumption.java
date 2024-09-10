@@ -67,7 +67,7 @@ public class Consumption {
 
     @Override
     public String toString() {
-        return "Consumption{" +
+        return "\n\tConsumption{" +
                 "startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", carbon=" + carbon +

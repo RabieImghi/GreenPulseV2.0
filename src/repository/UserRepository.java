@@ -1,12 +1,16 @@
 package repository;
 
+import Util.TypeOfConsumption;
 import config.DatabaseConnection;
+import domain.Consumption;
 import domain.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class UserRepository {
@@ -85,6 +89,33 @@ public class UserRepository {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<User> findAll(){
+        List<User> userList = new ArrayList<>();
+        String stmt = "SELECT * FROM users";
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement(stmt);
+            ResultSet result = preparedStatement.executeQuery();
+            while (result.next()){
+                User user = new User(result.getString("cin"),result.getString("name"),result.getInt("age"));
+                String stm2 = "SELECT * FROM consumptions WHERE user_cin = ?";
+                PreparedStatement preparedStatement2 = this.connection.prepareStatement(stm2);
+                preparedStatement2.setString(1,user.getCin());
+                ResultSet result2 = preparedStatement2.executeQuery();
+                List<Consumption> consumptionList = new ArrayList<>();
+                while (result2.next()){
+                    Consumption consumption = new Consumption(result2.getDate("start_date").toLocalDate(),result2.getDate("end_date").toLocalDate(),result2.getDouble("carbon_consumption"),TypeOfConsumption.valueOf(result2.getString("type_impact")));
+                    consumptionList.add(consumption);
+                }
+                user.setConsumptionList(consumptionList);
+                userList.add(user);
+            }
+            return userList;
+        }catch (Exception e){
+            System.out.println("Error In Find All Users : "+ e.getMessage());
+            return userList;
+        }
     }
 
 

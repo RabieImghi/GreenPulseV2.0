@@ -3,6 +3,7 @@ package service;
 import domain.User;
 import repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -45,6 +46,10 @@ public class UserService {
         },()->{
             System.out.println("User Not Found");
         });
+    }
+
+    public List<User> findAll(){
+        return userRepository.findAll();
     }
 
 }

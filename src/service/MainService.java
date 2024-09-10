@@ -16,11 +16,11 @@ public class MainService {
                 "\n| Select an option please :                 |" +
                 "\n|===========================================|"+
                 "\n| 1 : Add New User                          |" +
-                "\n| 2 : Add New Carbon Consumption            |" +
-                "\n| 3 : Display User Information (By CIN)     |" +
-                "\n| 4 : Update User                           |" +
-                "\n| 5 : Delete User                           |" +
-                "\n| 6 : Consumption Analysis                  |" +
+                "\n| 2 : Update User                           |" +
+                "\n| 3 : Delete User                           |" +
+                "\n| 4 : Add Consumption User                  |" +
+                "\n| 5 : Display All User                      |" +
+                "\n| 6 :                                       |" +
                 "\n| 7 : Close                                 |" +
                 "\n|===========================================|" +
                 "\nEntre your option : ");

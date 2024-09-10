@@ -47,6 +47,10 @@ public class Main {
                     saveConsumption();
                 }
                 break;
+                case "5":{
+                    List<User> listUsers = userService.findAll();
+                    System.out.println(listUsers);
+                }
                 case "7":
                     break;
                 default:
@@ -233,7 +237,6 @@ public class Main {
     }
 
     //function to save consumption
-
     public static void saveConsumption(){
         System.out.println("Give me Cin : ");
         String tempCin = scanner.nextLine();
