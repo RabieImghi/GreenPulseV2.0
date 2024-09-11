@@ -9,6 +9,7 @@ import repository.TransportRepository;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ImpactService {
@@ -16,55 +17,31 @@ public class ImpactService {
     public void saveImpact(LocalDate tempStartDate, LocalDate tempEndDate, Double tempCarVal, User user, TypeOfConsumption impactTypeOfConsumption, HashMap<Integer,String> typeImpactDetail) {
         switch (impactTypeOfConsumption) {
             case FOOD:{
-                Consumption consumption = new Consumption(tempStartDate,tempEndDate,tempCarVal,impactTypeOfConsumption);
-                consumption.setUser(user);
-                consumptionRepository.save(consumption).ifPresentOrElse(consumption1 -> {
-                    Food food = new Food(Double.parseDouble(typeImpactDetail.get(1)),typeImpactDetail.get(0),consumption1.getId());
-                    saveFood(food).ifPresent(food1 -> {
-                        System.out.println("Food impact saved");
-                    });
-                },()->{
-                    System.out.println("Error on save food impact");
-                });
+                Food food = new Food(tempStartDate,tempEndDate,tempCarVal,impactTypeOfConsumption,Double.parseDouble(typeImpactDetail.get(1)),typeImpactDetail.get(0));
+                food.setUser(user);
+                FoodService foodService = new FoodService();
+                foodService.saveFood(food);
             }
                 break;
             case HOUSING: {
-                Consumption consumption = new Consumption(tempStartDate,tempEndDate,tempCarVal,impactTypeOfConsumption);
-                consumption.setUser(user);
-                consumptionRepository.save(consumption).ifPresentOrElse(consumption1 -> {
-                    Housing housing = new Housing(Double.parseDouble(typeImpactDetail.get(1)),typeImpactDetail.get(0),consumption1.getId());
-                    saveHousing(housing).ifPresent(housing1 -> {
-                        System.out.println("Housing impact saved");
-                    });
-                },()->{
-                    System.out.println("Error on save housing impact");
-                });
+                Housing housing = new Housing(tempStartDate,tempEndDate,tempCarVal,impactTypeOfConsumption,Double.parseDouble(typeImpactDetail.get(1)),typeImpactDetail.get(0));
+                housing.setUser(user);
+                HousingService housingService = new HousingService();
+                housingService.saveHousing(housing);
+
             }
                 break;
             case TRANSPORT: {
-                Consumption consumption = new Consumption(tempStartDate,tempEndDate,tempCarVal,impactTypeOfConsumption);
-                consumption.setUser(user);
-                consumptionRepository.save(consumption).ifPresentOrElse(consumption1 -> {
-                    Transport transport = new Transport(Double.parseDouble(typeImpactDetail.get(1)),typeImpactDetail.get(0),consumption1.getId());
-                    saveTransport(transport).ifPresent(transport1 -> {
-                        System.out.println("Transport impact saved");
-                    });
-                },()->{
-                    System.out.println("Error on save transport impact");
-                });
+                Transport transport = new Transport(tempStartDate,tempEndDate,tempCarVal,impactTypeOfConsumption,Double.parseDouble(typeImpactDetail.get(1)),typeImpactDetail.get(0));
+                transport.setUser(user);
+                TransportService transportService = new TransportService();
+                transportService.saveTransport(transport);
             }
                 break;
             default:
                 System.out.println("Error on save impact");
         }
     }
-    public Optional<Food> saveFood(Food food){
-        return new FoodRepository().save(food);
-    }
-    public Optional<Housing> saveHousing(Housing housing){
-        return new HousingRepository().save(housing);
-    }
-    public Optional<Transport> saveTransport(Transport transport){
-        return new TransportRepository().save(transport);
-    }
+
+
 }

@@ -1,8 +1,6 @@
 package repository;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
+import java.sql.*;
 import java.util.Optional;
 
 import config.DatabaseConnection;
@@ -15,22 +13,37 @@ public class FoodRepository {
     public FoodRepository() {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
-
     public Optional<Food> save(Food food){
-        String stmSave = "INSERT INTO foods (food_type, weight, consumption_id) VALUES (?,?,?)";
-        Optional<Food> foodOptional = Optional.empty();
-        try {
-            PreparedStatement preparedStatement = this.connection.prepareStatement(stmSave);
-            preparedStatement.setString(1, food.getTypeFood());
-            preparedStatement.setDouble(2, food.getWeight());
-            preparedStatement.setInt(3, food.getConsumptionId());
-            int resultOfInsert = preparedStatement.executeUpdate();
-            if(resultOfInsert > 0) {
+        try{
+            this.connection.setAutoCommit(false);
+
+            ConsumptionRepository consumptionRepository=new ConsumptionRepository();
+            int idConsumption = consumptionRepository.save(food.getStartDate(),food.getEndDate(),food.getCarbon(),food.getUser().getCin(),String.valueOf(food.getTypeOfConsumption()));
+            String saveFood = "INSERT INTO foods (food_type, weight, consumption_id) VALUES (?,?,?)";
+            PreparedStatement preparedStatementSaveFood = this.connection.prepareStatement(saveFood);
+            preparedStatementSaveFood.setString(1, food.getTypeFood());
+            preparedStatementSaveFood.setDouble(2, food.getWeight());
+            preparedStatementSaveFood.setInt(3, idConsumption);
+            int resultOfInsert2 = preparedStatementSaveFood.executeUpdate();
+            if(resultOfInsert2 > 0) {
                 return Optional.of(food);
-            }else return foodOptional;
-        } catch (Exception e) {
-            System.out.println("Error on save food : " + e.getMessage());
-            return foodOptional;
+            }else return Optional.empty();
+
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+            e.printStackTrace();
+            return Optional.empty();
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 }

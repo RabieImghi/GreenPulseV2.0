@@ -3,6 +3,10 @@ package domain;
 import Util.TypeOfConsumption;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class Consumption {
     private int id;
@@ -67,12 +71,13 @@ public class Consumption {
 
     @Override
     public String toString() {
-        return "\n\tConsumption{" +
-                "startDate=" + startDate +
+        return "Consumption{" +
+                "id=" + id +
+                ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", carbon=" + carbon +
-                ", user=" + user +
                 ", typeOfConsumption=" + typeOfConsumption +
+                ", user=" + user +
                 '}';
     }
 }

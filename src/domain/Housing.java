@@ -1,15 +1,19 @@
 package domain;
 
-public class Housing {
+import Util.TypeOfConsumption;
+
+import java.time.LocalDate;
+
+public class Housing extends Consumption {
     private int id;
     private double consEnergy;
     private String typeEnergy;
-    private int consumptionId;
+    private Consumption consumption;
 
-    public Housing(double consEnergy, String typeEnergy, int consumptionId) {
+    public Housing(LocalDate startDate, LocalDate endDate, double carbon, TypeOfConsumption typeOfConsumption,double consEnergy, String typeEnergy) {
+        super(startDate,endDate,carbon,typeOfConsumption);
         this.consEnergy = consEnergy;
         this.typeEnergy = typeEnergy;
-        this.consumptionId = consumptionId;
     }
 
     public int getId() {
@@ -20,12 +24,12 @@ public class Housing {
         this.id = id;
     }
 
-    public int getConsumptionId() {
-        return consumptionId;
+    public Consumption getConsumption() {
+        return consumption;
     }
 
-    public void setConsumptionId(int consumptionId) {
-        this.consumptionId = consumptionId;
+    public void setConsumption(Consumption consumption) {
+        this.consumption = consumption;
     }
 
     public double getConsEnergy() {
@@ -42,5 +46,15 @@ public class Housing {
 
     public void setTypeEnergy(String typeEnergy) {
         this.typeEnergy = typeEnergy;
+    }
+
+    @Override
+    public String toString() {
+        return "Housing{" +
+                "id=" + id +
+                ", consEnergy=" + consEnergy +
+                ", typeEnergy='" + typeEnergy + '\'' +
+                ", consumptionId=" + consumption.getId() +
+                '}';
     }
 }

@@ -9,6 +9,7 @@ import Util.TypeOfConsumption;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
@@ -48,8 +49,7 @@ public class Main {
                 }
                 break;
                 case "5":{
-                    List<User> listUsers = userService.findAll();
-                    System.out.println(listUsers);
+                    displayUserInfo();
                 }
                 case "7":
                     break;
@@ -254,7 +254,12 @@ public class Main {
                 tempStartDate = LocalDate.parse(scanner.nextLine());
                 System.out.print("Give me new end date : ");
                 tempEndDate = LocalDate.parse(scanner.nextLine());
-                dateListRange = consumptionService.dateListRange(consumptionService.getAllConsumption(user));
+                List<Consumption> listConsumptionFilterByImpact = new ArrayList<>();
+                listConsumptionFilterByImpact=consumptionService.getAllConsumption(user).stream()
+                        .filter(consumption -> String.valueOf(consumption.getTypeOfConsumption())
+                                .equals(String.valueOf(impactTypeOfConsumption)))
+                        .collect(Collectors.toList());
+                dateListRange = consumptionService.dateListRange(listConsumptionFilterByImpact);
                 isExist = DateValidator.isThisDateValid(dateListRange,tempStartDate,tempEndDate);
                 if(isExist) System.out.println("This Date Already Exist Try Another Date !");
             }while (isExist);
@@ -263,12 +268,14 @@ public class Main {
 
             Optional<Consumption> consumption;
            impactService.saveImpact(tempStartDate,tempEndDate,tempCarVal,user,impactTypeOfConsumption,typeImpactDetail);
-
-
-            //Optional<Consumption> consumption= consumptionService.save(,user.getCin());
-            //consumption.ifPresent(consumption1 -> System.out.println("Consumption added with success"));
         },()->{
             System.out.println("user not found");
         });
+    }
+    //display users info
+
+    public static void displayUserInfo(){
+        List<User> userList = userService.findAll();
+        System.out.println(userList);
     }
 }

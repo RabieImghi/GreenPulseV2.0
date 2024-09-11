@@ -1,23 +1,27 @@
 package domain;
 
-public class Food {
+import Util.TypeOfConsumption;
+
+import java.time.LocalDate;
+
+public class Food extends Consumption {
     private int id;
     private double weight;
     private String typeFood;
-    private int consumptionId;
+    Consumption consumption;
 
-    public Food(double weight, String typeFood, int consumptionId) {
+    public Food(LocalDate startDate, LocalDate endDate, double carbon, TypeOfConsumption typeOfConsumption, double weight, String typeFood) {
+        super(startDate,endDate,carbon,typeOfConsumption);
         this.weight = weight;
         this.typeFood = typeFood;
-        this.consumptionId = consumptionId;
     }
 
-    public int getConsumptionId() {
-        return consumptionId;
+    public Consumption getConsumption() {
+        return consumption;
     }
 
-    public void setConsumptionId(int consumptionId) {
-        this.consumptionId = consumptionId;
+    public void setConsumption(Consumption consumption) {
+        this.consumption = consumption;
     }
 
     public int getId() {
@@ -42,5 +46,15 @@ public class Food {
 
     public void setTypeFood(String typeFood) {
         this.typeFood = typeFood;
+    }
+
+    @Override
+    public String toString() {
+        return "Food{" +
+                "id=" + id +
+                ", weight=" + weight +
+                ", typeFood='" + typeFood + '\'' +
+                ", consumptionId=" + consumption.getId() +
+                '}';
     }
 }

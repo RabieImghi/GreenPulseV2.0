@@ -1,15 +1,19 @@
 package domain;
 
-public class Transport {
+import Util.TypeOfConsumption;
+
+import java.time.LocalDate;
+
+public class Transport extends Consumption {
     private int id;
     private double distance;
     private String typeVehicle;
-    private int consumptionId;
+    Consumption consumption;
 
-    public Transport(double distance, String typeVehicle, int consumptionId) {
+    public Transport(LocalDate startDate, LocalDate endDate, double carbon, TypeOfConsumption typeOfConsumption, double distance, String typeVehicle) {
+        super(startDate,endDate,carbon,typeOfConsumption);
         this.distance = distance;
         this.typeVehicle = typeVehicle;
-        this.consumptionId = consumptionId;
     }
 
     public int getId() {
@@ -20,12 +24,12 @@ public class Transport {
         this.id = id;
     }
 
-    public int getConsumptionId() {
-        return consumptionId;
+    public Consumption getConsumption() {
+        return consumption;
     }
 
-    public void setConsumptionId(int consumptionId) {
-        this.consumptionId = consumptionId;
+    public void setConsumption(Consumption consumption) {
+        this.consumption = consumption;
     }
 
     public double getDistance() {
@@ -44,4 +48,13 @@ public class Transport {
         this.typeVehicle = typeVehicle;
     }
 
+    @Override
+    public String toString() {
+        return "Transport{" +
+                "id=" + id +
+                ", distance=" + distance +
+                ", typeVehicle='" + typeVehicle + '\'' +
+                ", consumptionId=" + consumption.getId() +
+                '}';
+    }
 }

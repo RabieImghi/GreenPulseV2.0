@@ -31,7 +31,7 @@ public class ConsumptionService {
         }
         return dateListRange;
     }
-    public List<Consumption> getAllConsumption(User user){
+   public List<Consumption> getAllConsumption(User user){
         return consumptionRepository.getAllConsumption(user);
     }
 }
