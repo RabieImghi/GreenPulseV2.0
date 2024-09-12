@@ -275,7 +275,15 @@ public class Main {
     //display users info
 
     public static void displayUserInfo(){
-        List<User> userList = userService.findAll();
-        System.out.println(userList);
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        userList.forEach((user,coumptionList)->{
+            System.out.println(user.getCin()+"/"+user.getName()+"\n");
+            coumptionList.forEach(consumption -> {
+                System.out.println("stat / end : "+consumption.getStartDate()+"/"+consumption.getEndDate());
+                System.out.println("impact type : "+consumption.getTypeOfConsumption());
+                System.out.println("Carbon Consumption : "+consumption.getCarbon());
+                System.out.println("impact Calcul = "+userService.impactCal(consumption));
+            });
+        });
     }
 }

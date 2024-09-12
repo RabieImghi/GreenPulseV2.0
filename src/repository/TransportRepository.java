@@ -7,6 +7,7 @@ import domain.Transport;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -48,5 +49,24 @@ public class TransportRepository {
                 e.printStackTrace();
             }
         }
+    }
+    public Optional<Transport> getTransportByIdConsumption(Consumption consumption){
+        Optional<Transport> housingOptional = Optional.empty();
+        try {
+            String stm = "SELECT * FROM transports WHERE consumption_id = ?";
+            PreparedStatement pr = this.connection.prepareStatement(stm);
+            pr.setInt(1,consumption.getId());
+            ResultSet resultSet = pr.executeQuery();
+            while(resultSet.next()){
+                housingOptional= Optional.of(new Transport(resultSet.getInt("id"),
+                        resultSet.getDouble("distance"),
+                        resultSet.getString("type_vehicule"),
+                        consumption));
+            }
+        }catch (Exception e){
+            System.out.println("Error on get Housing : "+e.getMessage());
+            return housingOptional;
+        }
+        return housingOptional;
     }
 }

@@ -16,6 +16,13 @@ public class Food extends Consumption {
         this.typeFood = typeFood;
     }
 
+    public Food(int id,double weight, String typeFood, Consumption consumption) {
+        this.id = id;
+        this.weight = weight;
+        this.typeFood = typeFood;
+        this.consumption = consumption;
+    }
+
     public Consumption getConsumption() {
         return consumption;
     }
@@ -46,6 +53,12 @@ public class Food extends Consumption {
 
     public void setTypeFood(String typeFood) {
         this.typeFood = typeFood;
+    }
+
+    @Override
+    public double impactCal(Double consumption) {
+        if(this.typeFood.equals("Meat")) return super.impactCal(consumption)*this.weight*5;
+        else return super.impactCal(consumption)*this.weight*0.5;
     }
 
     @Override

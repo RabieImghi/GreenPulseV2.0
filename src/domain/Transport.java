@@ -16,6 +16,13 @@ public class Transport extends Consumption {
         this.typeVehicle = typeVehicle;
     }
 
+    public Transport(int id, double distance, String typeVehicle, Consumption consumption) {
+        this.id = id;
+        this.distance = distance;
+        this.typeVehicle = typeVehicle;
+        this.consumption = consumption;
+    }
+
     public int getId() {
         return id;
     }
@@ -46,6 +53,12 @@ public class Transport extends Consumption {
 
     public void setTypeVehicle(String typeVehicle) {
         this.typeVehicle = typeVehicle;
+    }
+
+    @Override
+    public double impactCal(Double consumption) {
+        if (this.typeVehicle.equals("Car")) return super.impactCal(consumption)*this.distance*0.5;
+        return super.impactCal(consumption)*this.distance*0.1;
     }
 
     @Override

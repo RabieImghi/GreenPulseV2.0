@@ -16,6 +16,13 @@ public class Housing extends Consumption {
         this.typeEnergy = typeEnergy;
     }
 
+    public Housing(int id, double consEnergy, String typeEnergy, Consumption consumption) {
+        this.id = id;
+        this.consEnergy = consEnergy;
+        this.typeEnergy = typeEnergy;
+        this.consumption = consumption;
+    }
+
     public int getId() {
         return id;
     }
@@ -46,6 +53,12 @@ public class Housing extends Consumption {
 
     public void setTypeEnergy(String typeEnergy) {
         this.typeEnergy = typeEnergy;
+    }
+
+    @Override
+    public double impactCal(Double consumption) {
+        if(this.typeEnergy.equals("Gas")) return super.impactCal(consumption)*this.consEnergy*2;
+        else return super.impactCal(consumption)*this.consEnergy*1.5;
     }
 
     @Override

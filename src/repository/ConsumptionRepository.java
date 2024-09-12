@@ -59,6 +59,7 @@ public class ConsumptionRepository {
                 String typeImpact = resultSelectConsumption.getString("type_impact");
                 Consumption consumption = new Consumption(startDate, endDate, carbon, TypeOfConsumption.valueOf(typeImpact));
                 consumption.setUser(user);
+                consumption.setId(idConsumption);
                 consumptions.add(consumption);
             }
         } catch (SQLException e) {

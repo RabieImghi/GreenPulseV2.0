@@ -1,20 +1,24 @@
 package service;
 
-import domain.User;
+import domain.*;
+import repository.FoodRepository;
+import repository.HousingRepository;
+import repository.TransportRepository;
 import repository.UserRepository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 public class UserService {
     private final UserRepository userRepository = new UserRepository();
+    private final ConsumptionService consumptionService = new ConsumptionService();
     private Scanner scanner = new Scanner(System.in);
     private int tempAge = 0;
     private String tempCin;
     private String tempName;
     private Optional<User> user;
-    //public static String defaultEntre;
 
     public UserService(){}
 
@@ -48,8 +52,30 @@ public class UserService {
         });
     }
 
-    public List<User> findAll(){
-        return userRepository.findAll();
+    public HashMap<User,List<Consumption>> findAll(){
+        List<User> listUsers= userRepository.findAll();
+        HashMap<User,List<Consumption>> listUserConsumption= new HashMap<>();
+        listUsers.forEach(user->{
+            listUserConsumption.put(user,consumptionService.getAllConsumption(user));
+        });
+        return listUserConsumption;
+    }
+    public double impactCal(Consumption consumption){
+        switch (consumption.getTypeOfConsumption()){
+            case HOUSING:{
+                Optional<Housing> optionalHousing = new HousingRepository().getHousingByIdConsumption(consumption);
+                return optionalHousing.map(housing -> housing.impactCal(consumption.getCarbon())).orElse(0.);
+            }
+            case FOOD:{
+                Optional<Food> optionalFood = new FoodRepository().getFoodByIdConsumption(consumption);
+                return optionalFood.map(food -> food.impactCal(consumption.getCarbon())).orElse(0.);
+            }
+            case TRANSPORT:{
+                Optional<Transport> optionalTransport = new TransportRepository().getTransportByIdConsumption(consumption);
+                return optionalTransport.map(transport -> transport.impactCal(consumption.getCarbon())).orElse(0.);
+            }
+            default: return 0.;
+        }
     }
 
 }

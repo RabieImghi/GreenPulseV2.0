@@ -50,4 +50,24 @@ public class HousingRepository {
            }
        }
     }
+
+    public Optional<Housing> getHousingByIdConsumption(Consumption consumption){
+        Optional<Housing> housingOptional = Optional.empty();
+        try {
+            String stm = "SELECT * FROM housings WHERE consumption_id = ?";
+            PreparedStatement pr = this.connection.prepareStatement(stm);
+            pr.setInt(1,consumption.getId());
+            ResultSet resultSet = pr.executeQuery();
+            while(resultSet.next()){
+                housingOptional= Optional.of(new Housing(resultSet.getInt("id"),
+                        resultSet.getDouble("energy_consumption"),
+                        resultSet.getString("energy_type"),
+                        consumption));
+            }
+        }catch (Exception e){
+            System.out.println("Error on get Housing : "+e.getMessage());
+            return housingOptional;
+        }
+        return housingOptional;
+    }
 }

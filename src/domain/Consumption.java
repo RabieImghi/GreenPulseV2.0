@@ -23,6 +23,9 @@ public class Consumption {
         this.typeOfConsumption = typeOfConsumption;
     }
 
+    public Consumption() {
+    }
+
     public int getId() {
         return id;
     }
@@ -68,6 +71,9 @@ public class Consumption {
     public User getUser() {
         return user;
     }
+    public double impactCal(Double consumption){
+        return consumption;
+    };
 
     @Override
     public String toString() {
@@ -77,7 +83,6 @@ public class Consumption {
                 ", endDate=" + endDate +
                 ", carbon=" + carbon +
                 ", typeOfConsumption=" + typeOfConsumption +
-                ", user=" + user +
                 '}';
     }
 }

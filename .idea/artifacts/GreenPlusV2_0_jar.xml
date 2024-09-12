@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="GreenPlusV2.0:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/GreenPlusV2_0_jar</output-path>
+    <root id="archive" name="GreenPlusV2.0.jar">
+      <element id="module-output" name="GreenPlusV2.0" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/postgresql-42.7.3.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

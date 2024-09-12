@@ -6,6 +6,7 @@ import java.util.Optional;
 import config.DatabaseConnection;
 import domain.Consumption;
 import domain.Food;
+import domain.Housing;
 
 public class FoodRepository {
     private final Connection connection;
@@ -44,6 +45,25 @@ public class FoodRepository {
                 e.printStackTrace();
             }
         }
+    }
+    public Optional<Food> getFoodByIdConsumption(Consumption consumption){
+        Optional<Food> foodOptional = Optional.empty();
+        try {
+            String stm = "SELECT * FROM foods WHERE consumption_id = ?";
+            PreparedStatement pr = this.connection.prepareStatement(stm);
+            pr.setInt(1,consumption.getId());
+            ResultSet resultSet = pr.executeQuery();
+            while(resultSet.next()){
+                foodOptional= Optional.of(new Food(resultSet.getInt("id"),
+                        resultSet.getDouble("weight"),
+                        resultSet.getString("food_type"),
+                        consumption));
+            }
+        }catch (Exception e){
+            System.out.println("Error on get Housing : "+e.getMessage());
+            return foodOptional;
+        }
+        return foodOptional;
     }
 
 }

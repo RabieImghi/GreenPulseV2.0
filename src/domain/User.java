@@ -6,7 +6,6 @@ public class User {
     private String cin;
     private String name;
     private  int age;
-    private List<Consumption> consumptionList;
 
     public User(String cin, String name, int age) {
         this.cin = cin;
@@ -16,13 +15,7 @@ public class User {
 
     public User() {}
 
-    public List<Consumption> getConsumptionList() {
-        return consumptionList;
-    }
 
-    public void setConsumptionList(List<Consumption> consumptionList) {
-        this.consumptionList = consumptionList;
-    }
 
     public String getCin() {
         return cin;
@@ -48,13 +41,13 @@ public class User {
         this.age = age;
     }
 
+
     @Override
     public String toString() {
         return "\nUser{" +
                 "cin='" + cin + '\'' +
                 ", name='" + name + '\'' +
                 ", age=" + age +
-                ", list Consumption = "+consumptionList+
                 '}';
     }
 }
