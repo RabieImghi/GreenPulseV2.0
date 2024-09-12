@@ -51,7 +51,8 @@ public class Main {
                 case "5":{
                     displayUserInfo();
                 }
-                case "7":
+                case "6":
+                    displayUserFiltredByImpact();
                     break;
                 default:
                     System.out.println("Invalid option, please try again.");
@@ -62,7 +63,6 @@ public class Main {
     public static Optional<User> saveUser() {
         String tempCin;
         String tempName;
-        int tempAge;
         boolean userCinExist = false;
         boolean userAgeTest = false;
         do {
@@ -73,6 +73,33 @@ public class Main {
         } while (userCinExist);
         System.out.print("Give Me Your Name : ");
         tempName = scanner.nextLine();
+        int tempAge = getAgeUser();
+        User user = new User(tempCin, tempName, tempAge);
+        boolean userSaved = userService.save(user);
+        Optional<User> optionalUser;
+        if (userSaved) optionalUser = Optional.of(user);
+        else optionalUser = Optional.empty();
+        return optionalUser;
+    }
+
+    public static void updateUser() {
+        System.out.print("Give me CIN : ");
+        Optional<User> user = userService.findById(scanner.nextLine());
+        user.ifPresentOrElse(user1 -> {
+
+            System.out.print("Give me your name : ");
+            String tempName = scanner.nextLine();
+            user1.setName(tempName);
+            int tempAge = getAgeUser();
+            user1.setAge(tempAge);
+            Optional<User> userUpdated = userService.update(user1);
+            userUpdated.ifPresent((System.out::println));
+        }, () -> {
+            System.out.println("User Not Exist");
+        });
+    }
+    public static int getAgeUser(){
+        int tempAge;
         do {
             System.out.print("Give me your Age: ");
             String input = scanner.nextLine();
@@ -83,41 +110,8 @@ public class Main {
                 tempAge = 0;
             }
         } while (tempAge == 0);
-        User user = new User(tempCin, tempName, tempAge);
-        boolean userSaved = userService.save(user);
-        Optional<User> optionalUser;
-
-        if (userSaved) optionalUser = Optional.of(user);
-        else optionalUser = Optional.empty();
-        return optionalUser;
+        return tempAge;
     }
-
-    public static void updateUser() {
-        System.out.print("Give me CIN : ");
-        Optional<User> user = userService.findById(scanner.nextLine());
-        user.ifPresentOrElse(user1 -> {
-            int tempAge;
-            System.out.print("Give me your name : ");
-            String tempName = scanner.nextLine();
-            user1.setName(tempName);
-            do {
-                System.out.print("Give me your Age: ");
-                String input = scanner.nextLine();
-                try {
-                    tempAge = Integer.parseInt(input);
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid Age, please enter a valid integer.");
-                    tempAge = 0;
-                }
-            } while (tempAge == 0);
-            user1.setAge(tempAge);
-            Optional<User> userUpdated = userService.update(user1);
-            userUpdated.ifPresent((System.out::println));
-        }, () -> {
-            System.out.println("User Not Exist");
-        });
-    }
-
 
     // function to get the impact type and values
     public static TypeOfConsumption getImpact() {
@@ -278,12 +272,26 @@ public class Main {
         HashMap<User, List<Consumption>> userList = userService.findAll();
         userList.forEach((user,coumptionList)->{
             System.out.println(user.getCin()+"/"+user.getName()+"\n");
-            coumptionList.forEach(consumption -> {
-                System.out.println("stat / end : "+consumption.getStartDate()+"/"+consumption.getEndDate());
-                System.out.println("impact type : "+consumption.getTypeOfConsumption());
-                System.out.println("Carbon Consumption : "+consumption.getCarbon());
-                System.out.println("impact Calcul = "+userService.impactCal(consumption));
-            });
+            displayConsumptionList(coumptionList);
+        });
+    }
+
+    public static void displayUserFiltredByImpact(){
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        userList.forEach((user, consumptionList) -> {
+            System.out.println(user.getCin() + "/" + user.getName() + "\n");
+            List<Consumption> filteredConsumptions = consumptionList.stream()
+                    .filter(consumption -> userService.impactCal(consumption) > 50000)
+                    .collect(Collectors.toList());
+            displayConsumptionList(filteredConsumptions);
+        });
+    }
+    public static void displayConsumptionList(List<Consumption> coumptionList){
+        coumptionList.forEach(consumption -> {
+            System.out.println("stat / end : "+consumption.getStartDate()+"/"+consumption.getEndDate());
+            System.out.println("impact type : "+consumption.getTypeOfConsumption());
+            System.out.println("Carbon Consumption : "+consumption.getCarbon());
+            System.out.println("impact Calcul = "+userService.impactCal(consumption));
         });
     }
 }

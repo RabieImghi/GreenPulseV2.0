@@ -20,7 +20,7 @@ public class MainService {
                 "\n| 3 : Delete User                           |" +
                 "\n| 4 : Add Consumption User                  |" +
                 "\n| 5 : Display All User                      |" +
-                "\n| 6 :                                       |" +
+                "\n| 6 : Display All User >3000                |" +
                 "\n| 7 : Close                                 |" +
                 "\n|===========================================|" +
                 "\nEntre your option : ");
