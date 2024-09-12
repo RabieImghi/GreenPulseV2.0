@@ -16,6 +16,12 @@ import java.util.stream.Collectors;
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
     public static boolean optionsEnd = false;
+    public static final String RESET = "\u001B[0m";
+    public static final String BLUE = "\u001B[34m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String YELLOW = "\u001B[33m";
+    public static final String RED = "\u001B[31m";
+    public static final String CYAN = "\u001B[36m";
     public static UserService userService = new UserService();
     public static ImpactService impactService = new ImpactService();
     public static ConsumptionService consumptionService = new ConsumptionService();
@@ -59,6 +65,7 @@ public class Main {
                 case "7": displayInactiveUser(); break;
                 case "8": SortingUsersByConsumption(); break;
                 case "9": CalculationAverageConsumption(); break;
+                case "10": optionsEnd = true; break;
                 default:
                     System.out.println("Invalid option, please try again.");
             }
@@ -70,58 +77,76 @@ public class Main {
         String tempCin;
         String tempName;
         boolean userCinExist;
+
         do {
-            System.out.print("Give me your Cin : ");
+            System.out.print(CYAN + "Give me your Cin : " + RESET);
             tempCin = scanner.nextLine();
             userCinExist = userService.userExist(tempCin);
-            if (userCinExist) System.out.println("User CIN Already Exist");
+            if (userCinExist) System.out.println(RED + "User CIN Already Exists" + RESET);
         } while (userCinExist);
-        System.out.print("Give Me Your Name : ");
+
+        System.out.print(CYAN + "Give Me Your Name : " + RESET);
         tempName = scanner.nextLine();
+
         int tempAge = getAgeUser();
         User user = new User(tempCin, tempName, tempAge);
+
         boolean userSaved = userService.save(user);
         Optional<User> optionalUser;
-        if (userSaved) optionalUser = Optional.of(user);
-        else optionalUser = Optional.empty();
+
+        if (userSaved) {
+            optionalUser = Optional.of(user);
+            System.out.println(GREEN + "User successfully saved!" + RESET);
+        } else {
+            optionalUser = Optional.empty();
+            System.out.println(RED + "Failed to save user." + RESET);
+        }
+
         return optionalUser;
     }
     public static void updateUser() {
-        System.out.print("Give me CIN : ");
+        System.out.print(CYAN + "Give me CIN : " + RESET);
         Optional<User> user = userService.findById(scanner.nextLine());
-        user.ifPresentOrElse(user1 -> {
 
-            System.out.print("Give me your name : ");
+        user.ifPresentOrElse(user1 -> {
+            System.out.print(CYAN + "Give me your name : " + RESET);
             String tempName = scanner.nextLine();
             user1.setName(tempName);
+
             int tempAge = getAgeUser();
             user1.setAge(tempAge);
+
             Optional<User> userUpdated = userService.update(user1);
-            userUpdated.ifPresent((System.out::println));
-        }, () -> System.out.println("User Not Exist"));
+            userUpdated.ifPresent(updatedUser -> System.out.println(GREEN + "User updated: " + updatedUser + RESET));
+        }, () -> System.out.println(RED + "User Not Exist" + RESET));
     }
-    public static int getAgeUser(){
+    public static int getAgeUser() {
         int tempAge;
         do {
-            System.out.print("Give me your Age: ");
+            System.out.print(CYAN + "Give me your Age: " + RESET);
             String input = scanner.nextLine();
             try {
                 tempAge = Integer.parseInt(input);
+                if (tempAge <= 0) {
+                    System.out.println(RED + "Age must be a positive integer. Please try again." + RESET);
+                    tempAge = 0;
+                }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid Age, please enter a valid integer.");
+                System.out.println(RED + "Invalid Age, please enter a valid integer." + RESET);
                 tempAge = 0;
             }
-        } while (tempAge == 0);
+        } while (tempAge <= 0);
         return tempAge;
     }
     public static void displayUserCin(){
         HashMap<User, List<Consumption>> userList = userService.findAll();
-        System.out.println("=========================================");
+        System.out.println("\n");
+        System.out.printf(BLUE + "%-15s | %-20s | %-10s | %-20s%n" + RESET, "User CIN", "User Name", "User Age", "Total Consumption");
+        System.out.println(BLUE + "---------------------------------------------------------------------------" + RESET);
         userList.forEach((user,consumption)->{
-            System.out.println("User Cin : "+user.getCin()+"\tUser Name : "+user.getName());
-            System.out.println("-----------------------------------------");
+            System.out.printf(YELLOW +"%-15s | %-20s | %-10d | %-2d%n", user.getCin(), user.getName(), user.getAge(), consumption.size());
         });
-        System.out.println("=========================================");
+        System.out.println(BLUE + "---------------------------------------------------------------------------" + RESET);
     }
     public static void SortingUsersByConsumption(){
         HashMap<User, List<Consumption>> userList = userService.findAll();
@@ -356,7 +381,7 @@ public class Main {
         HashMap<User, List<Consumption>> userList = userService.findAll();
         LocalDate startDate;
         LocalDate endDate;
-        System.out.println("Give me period : ");
+          System.out.println("Give me period : ");
         System.out.print("Start Date (YYYY-MM-DD) : ");
         startDate = LocalDate.parse(scanner.nextLine());
         System.out.print("End Date (YYYY-MM-DD) : ");

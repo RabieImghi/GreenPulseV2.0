@@ -26,7 +26,7 @@ public class UserRepository {
             preparedStatement.setString(2,user.getName());
             preparedStatement.setInt(3, user.getAge());
             int rowsInserted = preparedStatement.executeUpdate();
-            if(rowsInserted > 0) System.out.println("user added with success");
+            if(rowsInserted > 0) return  Optional.of(user);
         } catch (SQLException e) {
             e.printStackTrace();
         }

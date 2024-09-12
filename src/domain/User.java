@@ -44,10 +44,14 @@ public class User {
 
     @Override
     public String toString() {
-        return "\nUser{" +
-                "cin='" + cin + '\'' +
-                ", name='" + name + '\'' +
-                ", age=" + age +
-                '}';
+        String RESET = "\u001B[0m";
+        String BLUE = "\u001B[34m";
+        String YELLOW = "\u001B[33m";
+        String header = BLUE + "+-------------------+---------------------+------+" + RESET + "\n" +
+                BLUE + "| " + YELLOW + "CIN" + RESET + "               | " + YELLOW + "Name" + RESET + "                " +
+                "| " + YELLOW + "Age" + RESET + "  |" + RESET;
+        String separator = BLUE + "+-------------------+---------------------+------+" + RESET;
+        String row = String.format("| %-17s | %-19s | %4d |", cin, name, age);
+        return header + "\n" + separator + "\n" + row + "\n" + separator;
     }
 }
