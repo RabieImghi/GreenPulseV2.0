@@ -1,14 +1,5 @@
 package service;
-
-
-import java.util.Scanner;
-
 public class MainService {
-    public static Scanner scanner = new Scanner(System.in);
-    public static int tempAge = 0;
-    public static String tempCin;
-    public static String tempNom;
-    public static String defaultEntre;
 
     public static void displayMenuUser(){
         System.out.print(
@@ -45,7 +36,7 @@ public class MainService {
                 "\n| Select an option of impact :              |" +
                 "\n|===========================================|"+
                 "\n| 1 : Car                                   |" +
-                "\n| 3 : Train                                 |" +
+                "\n| 2 : Train                                 |" +
                 "\n|===========================================|" +
                 "\nEntre your option : ");
     }
@@ -76,7 +67,7 @@ public class MainService {
                 "\n|=======================================|"+
                 "\n| 1 : Update User Information           |" +
                 "\n| 2 : Update Carbon Consumption         |" +
-                "\n| 5 : Close                             |" +
+                "\n| 3 : Close                             |" +
                 "\n|=======================================|" +
                 "\nEntre your option : ");
     }

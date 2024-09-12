@@ -9,16 +9,10 @@ import repository.UserRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 public class UserService {
     private final UserRepository userRepository = new UserRepository();
     private final ConsumptionService consumptionService = new ConsumptionService();
-    private Scanner scanner = new Scanner(System.in);
-    private int tempAge = 0;
-    private String tempCin;
-    private String tempName;
-    private Optional<User> user;
 
     public UserService(){}
 
@@ -27,7 +21,7 @@ public class UserService {
             userRepository.save(user);
             return true;
         }catch (Exception e){
-            System.out.println(e.getMessage());;
+            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -51,9 +45,7 @@ public class UserService {
     public HashMap<User,List<Consumption>> findAll(){
         List<User> listUsers= userRepository.findAll();
         HashMap<User,List<Consumption>> listUserConsumption= new HashMap<>();
-        listUsers.forEach(user->{
-            listUserConsumption.put(user,consumptionService.getAllConsumption(user));
-        });
+        listUsers.forEach(user-> listUserConsumption.put(user,consumptionService.getAllConsumption(user)));
         return listUserConsumption;
     }
     public double impactCal(Consumption consumption){

@@ -1,8 +1,6 @@
 package repository;
 
-import Util.TypeOfConsumption;
 import config.DatabaseConnection;
-import domain.Consumption;
 import domain.User;
 
 import java.sql.Connection;

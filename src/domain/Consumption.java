@@ -3,10 +3,7 @@ package domain;
 import Util.TypeOfConsumption;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
 
 public class Consumption {
     private int id;
@@ -73,7 +70,7 @@ public class Consumption {
     }
     public double impactCal(Double consumption){
         return consumption;
-    };
+    }
 
     @Override
     public String toString() {

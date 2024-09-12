@@ -13,11 +13,9 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static Scanner scanner = new Scanner(System.in);
-    public static boolean functionReturn = false;
     public static boolean optionsEnd = false;
     public static UserService userService = new UserService();
     public static ImpactService impactService = new ImpactService();
-
     public static ConsumptionService consumptionService = new ConsumptionService();
 
     public static void main(String[] args) {
@@ -28,11 +26,7 @@ public class Main {
             switch (option) {
                 case "1": {
                     Optional<User> functionReturn = saveUser();
-                    functionReturn.ifPresentOrElse(user -> {
-                        System.out.println("User Added : " + user.toString());
-                    }, () -> {
-                        System.out.println("User Not add");
-                    });
+                    functionReturn.ifPresent(System.out::println);
                 }
                 break;
                 case "2": {
@@ -42,23 +36,25 @@ public class Main {
                 break;
                 case "3": {
                     displayUserCin();
-                    Optional<User> user =Optional.empty();
+                    Optional<User> user ;
                     String cin;
                     do {
-                        System.out.print("Give me CIN : ");
-                        cin=scanner.nextLine();
-                        user =userService.delete(cin);
-                        user.ifPresentOrElse(System.out::println
-                        ,()->{ System.out.println("User Cin Not Exist ! (Back ? : quite )"); });
-                    }while (user.isEmpty() && !cin.equals( "quite"));
+                        System.out.print("Give me CIN: ");
+                        cin = scanner.nextLine();
+                        user = userService.delete(cin);
+                        user.ifPresentOrElse(
+                                System.out::println,
+                                () -> System.out.println("User CIN Not Exist! (Back? Type 'quite')")
+                        );
+                    } while (user.isEmpty() && !cin.equals("quite"));
                 }
                 break;
                 case "4": {
                     displayUserCin();
                     saveConsumption();
-                }; break;
+                }break;
                 case "5": displayUserInfo(); break;
-                case "6": displayUserFiltredByImpact(); break;
+                case "6": displayUserFilteredByImpact(50000); break;
                 case "7": break;
                 case "8": SortingUsersByConsumption(); break;
                 default:
@@ -67,11 +63,11 @@ public class Main {
         } while (!optionsEnd);
     }
 
+    //=================================================== User Functions
     public static Optional<User> saveUser() {
         String tempCin;
         String tempName;
-        boolean userCinExist = false;
-        boolean userAgeTest = false;
+        boolean userCinExist;
         do {
             System.out.print("Give me your Cin : ");
             tempCin = scanner.nextLine();
@@ -88,7 +84,6 @@ public class Main {
         else optionalUser = Optional.empty();
         return optionalUser;
     }
-
     public static void updateUser() {
         System.out.print("Give me CIN : ");
         Optional<User> user = userService.findById(scanner.nextLine());
@@ -101,9 +96,7 @@ public class Main {
             user1.setAge(tempAge);
             Optional<User> userUpdated = userService.update(user1);
             userUpdated.ifPresent((System.out::println));
-        }, () -> {
-            System.out.println("User Not Exist");
-        });
+        }, () -> System.out.println("User Not Exist"));
     }
     public static int getAgeUser(){
         int tempAge;
@@ -119,7 +112,93 @@ public class Main {
         } while (tempAge == 0);
         return tempAge;
     }
-    // function to get the impact type and values
+    public static void displayUserCin(){
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        System.out.println("=========================================");
+        userList.forEach((user,consumption)->{
+            System.out.println("User Cin : "+user.getCin()+"\tUser Name : "+user.getName());
+            System.out.println("-----------------------------------------");
+        });
+        System.out.println("=========================================");
+    }
+    public static void SortingUsersByConsumption(){
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        userList.entrySet().stream()
+                .sorted((user, user2) -> {
+                    double totalImpact1 = user.getValue().stream()
+                            .mapToDouble(consumption -> userService.impactCal(consumption))
+                            .sum();
+
+                    double totalImpact2 = user2.getValue().stream()
+                            .mapToDouble(consumption -> userService.impactCal(consumption))
+                            .sum();
+
+                    return Double.compare(totalImpact2, totalImpact1);
+                })
+                .forEach(entry -> {
+                    User user = entry.getKey();
+                    List<Consumption> consumptionList = entry.getValue();
+                    System.out.println(user.getCin() + "/" + user.getName() + "\n");
+                    double totalImpact = 0.;
+                    for (Consumption c : consumptionList){
+                        totalImpact+=userService.impactCal(c);
+                    }
+                    System.out.println("total : "+totalImpact);
+                });
+    }
+    public static void displayUserFilteredByImpact(int number){
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        userList.forEach((user, consumptionList) -> {
+            System.out.println(user.getCin() + "/" + user.getName() + "\n");
+            List<Consumption> filteredConsumptions = consumptionList.stream()
+                    .filter(consumption -> userService.impactCal(consumption) > number)
+                    .collect(Collectors.toList());
+            displayConsumptionList(filteredConsumptions);
+        });
+    }
+    public static void displayUserInfo(){
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        userList.forEach((user,coumptionList)->{
+            System.out.println(user.getCin()+"/"+user.getName()+"\n");
+            displayConsumptionList(coumptionList);
+        });
+    }
+
+
+    //=================================================== Consumption Save Function
+    public static void saveConsumption(){
+        System.out.print("Give me Cin : ");
+        String tempCin = scanner.nextLine();
+        Optional<User> userOptional = userService.findById(tempCin);
+        userOptional.ifPresentOrElse(user -> {
+            TypeOfConsumption impactTypeOfConsumption = getImpact();
+            HashMap<Integer,String> typeImpactDetail = typeOfImpact(impactTypeOfConsumption);
+            LocalDate tempStartDate;
+            LocalDate tempEndDate;
+            boolean isExist;
+            do{
+                List<LocalDate> dateListRange;
+                System.out.print("Give me new start date : ");
+                tempStartDate = LocalDate.parse(scanner.nextLine());
+                System.out.print("Give me new end date : ");
+                tempEndDate = LocalDate.parse(scanner.nextLine());
+                List<Consumption> listConsumptionFilterByImpact;
+                listConsumptionFilterByImpact=consumptionService.getAllConsumption(user).stream()
+                        .filter(consumption -> String.valueOf(consumption.getTypeOfConsumption())
+                                .equals(String.valueOf(impactTypeOfConsumption)))
+                        .collect(Collectors.toList());
+                dateListRange = consumptionService.dateListRange(listConsumptionFilterByImpact);
+                isExist = DateValidator.isThisDateValid(dateListRange,tempStartDate,tempEndDate);
+                if(isExist) System.out.println("This Date Already Exist Try Another Date !");
+            }while (isExist);
+            System.out.print("Give me Carbon : ");
+            double tempCarVal = scanner.nextDouble();
+            impactService.saveImpact(tempStartDate,tempEndDate,tempCarVal,user,impactTypeOfConsumption,typeImpactDetail);
+        },()-> System.out.println("user not found"));
+    }
+
+
+    //=================================================== function to get the impact type and values
     public static TypeOfConsumption getImpact() {
         MainService.displayMenuImpact();
         String typeImpact;
@@ -162,24 +241,28 @@ public class Main {
             typeImpact = scanner.nextLine();
             switch (typeImpact) {
                 case "1":
-                    System.out.println("Give me distance traveled : ");
+                    System.out.print("Give Me Distance Traveled : ");
                     double distance = scanner.nextDouble();
-                    impactDistanceAndType.put(0,"Car");
-                    impactDistanceAndType.put(1,Double.toString(distance));
-                    return impactDistanceAndType;
-                case "2":
-                    System.out.println("Give me distance traveled : ");
-                    double distanceTrain = scanner.nextDouble();
-                    impactDistanceAndType.put(0,"Train");
-                    impactDistanceAndType.put(1,Double.toString(distanceTrain));
-                    return impactDistanceAndType;
-                default:{
-                    System.out.println("Invalid option, please try again.");
+                    scanner.nextLine();
+                    impactDistanceAndType.put(0, "Car");
+                    impactDistanceAndType.put(1, Double.toString(distance));
                     optionTest = true;
-                    return null;
-                }
+                    break;
+                case "2":
+                    System.out.print("Give Me Distance Traveled: ");
+                    double distanceTrain = scanner.nextDouble();
+                    scanner.nextLine();
+                    impactDistanceAndType.put(0, "Train");
+                    impactDistanceAndType.put(1, Double.toString(distanceTrain));
+                    optionTest = true;
+                    break;
+                default:
+                    System.out.println("Invalid option, please try again.");
+                    System.out.print("Give me Distance Traveled : ");
+
             }
-        } while (optionTest);
+        } while (!optionTest);
+        return impactDistanceAndType;
     }
     public static HashMap<Integer,String> typeEnergy(){
         MainService.displayMenuImpactHousing();
@@ -190,23 +273,25 @@ public class Main {
             typeImpact = scanner.nextLine();
             switch (typeImpact) {
                 case "1":
-                    System.out.println("Give me Gas : ");
+                    System.out.print("Give me Gas Energy consumption : ");
                     double gas = scanner.nextDouble();
                     impactEnergyAndType.put(0,"Gas");
                     impactEnergyAndType.put(1,Double.toString(gas));
-                    return impactEnergyAndType;
+                    optionTest = true;
+                    break;
                 case "2":
-                    System.out.println("Give me Electricity : ");
+                    System.out.print("Give me Electricity Energy consumption : ");
                     double electricity = scanner.nextDouble();
                     impactEnergyAndType.put(0,"Electricity");
                     impactEnergyAndType.put(1,Double.toString(electricity));
-                    return impactEnergyAndType;
-                default:
-                    System.out.println("Invalid option, please try again.");
                     optionTest = true;
-                    return null;
+
+                default:
+                    System.out.println("Invalid option, please try again");
+                    System.out.print("Give me Energy Consumption : ");
             }
-        } while (optionTest);
+        } while (!optionTest);
+        return impactEnergyAndType;
     }
     public static HashMap<Integer,String> typeFood(){
         MainService.displayMenuImpactFood();
@@ -217,122 +302,32 @@ public class Main {
             typeImpact = scanner.nextLine();
             switch (typeImpact) {
                 case "1":
-                    System.out.println("Give me Meat : ");
+                    System.out.print("Give Me Meat Weight : ");
                     double meat = scanner.nextDouble();
                     impactFoodAndType.put(0,"Meat");
                     impactFoodAndType.put(1,Double.toString(meat));
-                    return impactFoodAndType;
                 case "2":
-                    System.out.println("Give me Vegetables : ");
+                    System.out.print("Give me Vegetables Weight : ");
                     double vegetables = scanner.nextDouble();
                     impactFoodAndType.put(0,"Vegetables");
                     impactFoodAndType.put(1,Double.toString(vegetables));
-                    return impactFoodAndType;
+                    optionTest = true;
                 default:
                     System.out.println("Invalid option, please try again.");
-                    optionTest = true;
-                    return null;
+                    System.out.println("Give me Weight : ");
             }
-        } while (optionTest);
+        } while (!optionTest);
+        return impactFoodAndType;
     }
 
-    //function to save consumption
-    public static void saveConsumption(){
-        System.out.println("Give me Cin : ");
-        String tempCin = scanner.nextLine();
-        Optional<User> userOptional = userService.findById(tempCin);
-        userOptional.ifPresentOrElse(user -> {
-            TypeOfConsumption impactTypeOfConsumption = getImpact();
-            HashMap<Integer,String> typeImpactDetail = typeOfImpact(impactTypeOfConsumption);
-            LocalDate tempStartDate;
-            LocalDate tempEndDate;
-            boolean isExist;
-            do{
-                String defaultEntre = scanner.nextLine();
-                List<LocalDate> dateListRange = new ArrayList<>();
-                System.out.print("Give me new start date : ");
-                tempStartDate = LocalDate.parse(scanner.nextLine());
-                System.out.print("Give me new end date : ");
-                tempEndDate = LocalDate.parse(scanner.nextLine());
-                List<Consumption> listConsumptionFilterByImpact = new ArrayList<>();
-                listConsumptionFilterByImpact=consumptionService.getAllConsumption(user).stream()
-                        .filter(consumption -> String.valueOf(consumption.getTypeOfConsumption())
-                                .equals(String.valueOf(impactTypeOfConsumption)))
-                        .collect(Collectors.toList());
-                dateListRange = consumptionService.dateListRange(listConsumptionFilterByImpact);
-                isExist = DateValidator.isThisDateValid(dateListRange,tempStartDate,tempEndDate);
-                if(isExist) System.out.println("This Date Already Exist Try Another Date !");
-            }while (isExist);
-            System.out.print("Give me Carbon : ");
-            double tempCarVal = scanner.nextDouble();
-
-            Optional<Consumption> consumption;
-           impactService.saveImpact(tempStartDate,tempEndDate,tempCarVal,user,impactTypeOfConsumption,typeImpactDetail);
-        },()->{
-            System.out.println("user not found");
-        });
-    }
-    //display users info
-    public static void displayUserInfo(){
-        HashMap<User, List<Consumption>> userList = userService.findAll();
-        userList.forEach((user,coumptionList)->{
-            System.out.println(user.getCin()+"/"+user.getName()+"\n");
-            displayConsumptionList(coumptionList);
-        });
-    }
-    public static void displayUserCin(){
-        HashMap<User, List<Consumption>> userList = userService.findAll();
-        System.out.println("=========================================");
-        userList.forEach((user,consumption)->{
-            System.out.println("User Cin : "+user.getCin()+"\tUser Name : "+user.getName());
-            System.out.println("-----------------------------------------");
-        });
-        System.out.println("=========================================");
-    }
-
-    public static void displayUserFiltredByImpact(){
-        HashMap<User, List<Consumption>> userList = userService.findAll();
-        userList.forEach((user, consumptionList) -> {
-            System.out.println(user.getCin() + "/" + user.getName() + "\n");
-            List<Consumption> filteredConsumptions = consumptionList.stream()
-                    .filter(consumption -> userService.impactCal(consumption) > 50000)
-                    .collect(Collectors.toList());
-            displayConsumptionList(filteredConsumptions);
-        });
-    }
+    //display users information
     public static void displayConsumptionList(List<Consumption> coumptionList){
         coumptionList.forEach(consumption -> {
             System.out.println("stat / end : "+consumption.getStartDate()+"/"+consumption.getEndDate());
             System.out.println("impact type : "+consumption.getTypeOfConsumption());
-            System.out.println("Carbon Consumption : "+consumption.getCarbon());
-            System.out.println("impact Calcul = "+userService.impactCal(consumption));
+            System.out.println("impact Consumption = "+userService.impactCal(consumption));
         });
     }
 
-    public static void SortingUsersByConsumption(){
-        HashMap<User, List<Consumption>> userList = userService.findAll();
-        userList.entrySet().stream()
-                .sorted((user, user2) -> {
-                    double totalImpact1 = user.getValue().stream()
-                            .mapToDouble(consumption -> userService.impactCal(consumption))
-                            .sum();
-
-                    double totalImpact2 = user2.getValue().stream()
-                            .mapToDouble(consumption -> userService.impactCal(consumption))
-                            .sum();
-
-                    return Double.compare(totalImpact2, totalImpact1);
-                })
-                .forEach(entry -> {
-                    User user = entry.getKey();
-                    List<Consumption> consumptionList = entry.getValue();
-                    System.out.println(user.getCin() + "/" + user.getName() + "\n");
-                    double totalImpact = 0.;
-                    for (Consumption c : consumptionList){
-                        totalImpact+=userService.impactCal(c);
-                    }
-                    System.out.println("total : "+totalImpact);
-                });
-    }
 
 }

@@ -1,8 +1,6 @@
 package service;
 
-import domain.Food;
 import domain.Housing;
-import repository.FoodRepository;
 import repository.HousingRepository;
 
 import java.util.Optional;

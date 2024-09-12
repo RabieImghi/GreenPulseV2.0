@@ -2,7 +2,6 @@ package repository;
 
 import config.DatabaseConnection;
 import domain.Consumption;
-import domain.Housing;
 import domain.Transport;
 
 import java.sql.Connection;

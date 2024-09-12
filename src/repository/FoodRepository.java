@@ -6,7 +6,6 @@ import java.util.Optional;
 import config.DatabaseConnection;
 import domain.Consumption;
 import domain.Food;
-import domain.Housing;
 
 public class FoodRepository {
     private final Connection connection;

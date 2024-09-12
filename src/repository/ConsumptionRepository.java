@@ -11,8 +11,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 
 public class ConsumptionRepository {
@@ -21,6 +19,7 @@ public class ConsumptionRepository {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
     public Integer save(LocalDate start, LocalDate end, double carbon,String cin,String typeImpact){
+        int idConsumption=0;
         try {
             String saveConsumption = "INSERT INTO consumptions (start_date, end_date,carbon_consumption,user_cin,type_impact) VALUES (?,?,?,?,?)";
             PreparedStatement preparedSaveConsumption = this.connection.prepareStatement(saveConsumption, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -30,11 +29,11 @@ public class ConsumptionRepository {
             preparedSaveConsumption.setString(4, cin);
             preparedSaveConsumption.setString(5, typeImpact);
             int resultOfInsert = preparedSaveConsumption.executeUpdate();
-            int idConsumption=0;
+
             if (resultOfInsert > 0) {
                 ResultSet generatedKeys = preparedSaveConsumption.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    return  idConsumption = generatedKeys.getInt(1);
+                    idConsumption = generatedKeys.getInt(1);
                 } else {
                     System.out.println("No generated key returned.");
                 }
@@ -42,7 +41,8 @@ public class ConsumptionRepository {
         }catch (SQLException e){
             System.err.println("add Consumption error : "+e.getMessage());
         }
-        return 0;
+        return idConsumption;
+
     }
     public List<Consumption> getAllConsumption(User user){
         List<Consumption> consumptions = new ArrayList<>();
