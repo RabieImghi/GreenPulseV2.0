@@ -40,16 +40,12 @@ public class UserService {
     public Optional<User> update(User user){
         return userRepository.update(user);
     }
-    public void delete(String cin){
-        userRepository.findById(cin).ifPresentOrElse(user->{
-            Optional<User> userDeleted = userRepository.delete(cin);
-            userDeleted.ifPresent(user1->{
-                System.out.println("User Deleted Is : ");
-                System.out.println(user1.toString());
-            });
-        },()->{
-            System.out.println("User Not Found");
-        });
+    public Optional<User> delete(String cin){
+        Optional<User> userDeleted = Optional.empty();
+        if(userRepository.findById(cin).isPresent()){
+            userDeleted = userRepository.delete(cin);
+        }
+        return userDeleted;
     }
 
     public HashMap<User,List<Consumption>> findAll(){

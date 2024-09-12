@@ -36,24 +36,31 @@ public class Main {
                 }
                 break;
                 case "2": {
+                    displayUserCin();
                     updateUser();
                 }
                 break;
                 case "3": {
-                    System.out.print("Give me CIN : ");
-                    userService.delete(scanner.nextLine());
+                    displayUserCin();
+                    Optional<User> user =Optional.empty();
+                    String cin;
+                    do {
+                        System.out.print("Give me CIN : ");
+                        cin=scanner.nextLine();
+                        user =userService.delete(cin);
+                        user.ifPresentOrElse(System.out::println
+                        ,()->{ System.out.println("User Cin Not Exist ! (Back ? : quite )"); });
+                    }while (user.isEmpty() && !cin.equals( "quite"));
                 }
                 break;
                 case "4": {
+                    displayUserCin();
                     saveConsumption();
-                }
-                break;
-                case "5":{
-                    displayUserInfo();
-                }
-                case "6":
-                    displayUserFiltredByImpact();
-                    break;
+                }; break;
+                case "5": displayUserInfo(); break;
+                case "6": displayUserFiltredByImpact(); break;
+                case "7": break;
+                case "8": SortingUsersByConsumption(); break;
                 default:
                     System.out.println("Invalid option, please try again.");
             }
@@ -112,7 +119,6 @@ public class Main {
         } while (tempAge == 0);
         return tempAge;
     }
-
     // function to get the impact type and values
     public static TypeOfConsumption getImpact() {
         MainService.displayMenuImpact();
@@ -267,13 +273,21 @@ public class Main {
         });
     }
     //display users info
-
     public static void displayUserInfo(){
         HashMap<User, List<Consumption>> userList = userService.findAll();
         userList.forEach((user,coumptionList)->{
             System.out.println(user.getCin()+"/"+user.getName()+"\n");
             displayConsumptionList(coumptionList);
         });
+    }
+    public static void displayUserCin(){
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        System.out.println("=========================================");
+        userList.forEach((user,consumption)->{
+            System.out.println("User Cin : "+user.getCin()+"\tUser Name : "+user.getName());
+            System.out.println("-----------------------------------------");
+        });
+        System.out.println("=========================================");
     }
 
     public static void displayUserFiltredByImpact(){
@@ -294,4 +308,31 @@ public class Main {
             System.out.println("impact Calcul = "+userService.impactCal(consumption));
         });
     }
+
+    public static void SortingUsersByConsumption(){
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        userList.entrySet().stream()
+                .sorted((user, user2) -> {
+                    double totalImpact1 = user.getValue().stream()
+                            .mapToDouble(consumption -> userService.impactCal(consumption))
+                            .sum();
+
+                    double totalImpact2 = user2.getValue().stream()
+                            .mapToDouble(consumption -> userService.impactCal(consumption))
+                            .sum();
+
+                    return Double.compare(totalImpact2, totalImpact1);
+                })
+                .forEach(entry -> {
+                    User user = entry.getKey();
+                    List<Consumption> consumptionList = entry.getValue();
+                    System.out.println(user.getCin() + "/" + user.getName() + "\n");
+                    double totalImpact = 0.;
+                    for (Consumption c : consumptionList){
+                        totalImpact+=userService.impactCal(c);
+                    }
+                    System.out.println("total : "+totalImpact);
+                });
+    }
+
 }
