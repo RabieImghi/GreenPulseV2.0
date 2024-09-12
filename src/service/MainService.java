@@ -12,7 +12,7 @@ public class MainService {
                 "\n| 4 : Add Consumption User                  |" +
                 "\n| 5 : Display All User                      |" +
                 "\n| 6 : Display All User >3000                |" +
-                "\n| 7 : InactiveUserDetection                 |" +
+                "\n| 7 : Inactive User Detection               |" +
                 "\n| 8 : Sorting Users by Consumption          |" +
                 "\n| 7 : Close                                 |" +
                 "\n| 7 : Close                                 |" +

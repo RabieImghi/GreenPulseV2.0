@@ -1,5 +1,7 @@
 import Util.DateValidator;
 import domain.Consumption;
+import domain.Food;
+import domain.Transport;
 import domain.User;
 import service.ConsumptionService;
 import service.ImpactService;
@@ -19,7 +21,6 @@ public class Main {
     public static ConsumptionService consumptionService = new ConsumptionService();
 
     public static void main(String[] args) {
-
         do {
             MainService.displayMenuUser();
             String option = scanner.nextLine();
@@ -57,6 +58,7 @@ public class Main {
                 case "6": displayUserFilteredByImpact(50000); break;
                 case "7": displayInactiveUser(); break;
                 case "8": SortingUsersByConsumption(); break;
+                case "9": CalculationAverageConsumption(); break;
                 default:
                     System.out.println("Invalid option, please try again.");
             }
@@ -164,7 +166,7 @@ public class Main {
         });
     }
 
-    // function to get Inactive User
+    //===================================================  function to get Inactive User
     public static void displayInactiveUser(){
         HashMap<User, List<Consumption>> userList = userService.findAll();
         LocalDate startDate;
@@ -350,7 +352,29 @@ public class Main {
         });
     }
 
-
-
+    public static void CalculationAverageConsumption(){
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        LocalDate startDate;
+        LocalDate endDate;
+        System.out.println("Give me period : ");
+        System.out.print("Start Date (YYYY-MM-DD) : ");
+        startDate = LocalDate.parse(scanner.nextLine());
+        System.out.print("End Date (YYYY-MM-DD) : ");
+        endDate = LocalDate.parse(scanner.nextLine());
+        userList.forEach((user,consumptionList)->{
+            System.out.println("=========================================");
+            System.out.println(user.getCin()+"/"+user.getName());
+            System.out.println("Average Consumption : "+averageByPeriod(consumptionList,startDate,endDate));
+        });
+    }
+    public static  Double averageByPeriod(List<Consumption> consumptions, LocalDate start , LocalDate endDate) {
+        if (!start.isAfter(endDate)) {
+            List<LocalDate> dates = DateValidator.dateListRange(start, endDate);
+            return (consumptions
+                    .stream()
+                    .filter(e -> DateValidator.isThisDateValid(dates,e.getStartDate(), e.getEndDate()))
+                    .mapToDouble(e-> userService.impactCal(e)).sum()) / dates.size();
+        }else return 0.;
+    }
 
 }
