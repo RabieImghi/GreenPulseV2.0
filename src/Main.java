@@ -55,7 +55,7 @@ public class Main {
                 }break;
                 case "5": displayUserInfo(); break;
                 case "6": displayUserFilteredByImpact(50000); break;
-                case "7": break;
+                case "7": displayInactiveUser(); break;
                 case "8": SortingUsersByConsumption(); break;
                 default:
                     System.out.println("Invalid option, please try again.");
@@ -164,6 +164,27 @@ public class Main {
         });
     }
 
+    // function to get Inactive User
+    public static void displayInactiveUser(){
+        HashMap<User, List<Consumption>> userList = userService.findAll();
+        LocalDate startDate;
+        LocalDate endDate;
+        System.out.println("Give me period : ");
+        System.out.print("Start Date (YYYY-MM-DD) : ");
+        startDate = LocalDate.parse(scanner.nextLine());
+        System.out.print("End Date (YYYY-MM-DD) : ");
+        endDate = LocalDate.parse(scanner.nextLine());
+        LocalDate finalStartDate = startDate;
+        LocalDate finalEndDate1 = endDate;
+        userList.forEach((user, consumptionList)->{
+            List<LocalDate> dateListRange = consumptionService.dateListRange(consumptionList);
+            List<Consumption> newConsumationList = consumptionList.stream()
+                    .filter(consumption -> DateValidator.isThisDateValid(dateListRange, finalStartDate, finalEndDate1)).collect(Collectors.toList());
+            if(newConsumationList.isEmpty()){
+                System.out.println(user.getCin()+"/"+user.getName());
+            }
+        });
+    }
 
     //=================================================== Consumption Save Function
     public static void saveConsumption(){
@@ -320,7 +341,7 @@ public class Main {
         return impactFoodAndType;
     }
 
-    //display users information
+    //display users information of consumption
     public static void displayConsumptionList(List<Consumption> coumptionList){
         coumptionList.forEach(consumption -> {
             System.out.println("stat / end : "+consumption.getStartDate()+"/"+consumption.getEndDate());
@@ -328,6 +349,8 @@ public class Main {
             System.out.println("impact Consumption = "+userService.impactCal(consumption));
         });
     }
+
+
 
 
 }
