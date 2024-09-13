@@ -1,7 +1,5 @@
 import Util.DateValidator;
 import domain.Consumption;
-import domain.Food;
-import domain.Transport;
 import domain.User;
 import service.ConsumptionService;
 import service.ImpactService;
@@ -56,14 +54,14 @@ public class Main {
                     } while (user.isEmpty() && !cin.equals("quite"));
                 }
                 break;
-                case "4": {
+                case "4": displayUserInfo(); break;
+                case "5": {
                     displayUserCin();
                     saveConsumption();
                 }break;
-                case "5": displayUserInfo(); break;
-                case "6": displayUserFilteredByImpact(50000); break;
-                case "7": displayInactiveUser(); break;
-                case "8": SortingUsersByConsumption(); break;
+                case "6": displayUserFilteredByImpact(3000); break;
+                case "7": SortingUsersByConsumption(); break;
+                case "8": displayInactiveUser(); break;
                 case "9": CalculationAverageConsumption(); break;
                 case "10": optionsEnd = true; break;
                 default:
@@ -135,7 +133,7 @@ public class Main {
                 System.out.println(RED + "Invalid Age, please enter a valid integer." + RESET);
                 tempAge = 0;
             }
-        } while (tempAge <= 0);
+        } while (tempAge == 0);
         return tempAge;
     }
     public static void displayUserCin(){
@@ -143,9 +141,9 @@ public class Main {
         System.out.println("\n");
         System.out.printf(BLUE + "%-15s | %-20s | %-10s | %-20s%n" + RESET, "User CIN", "User Name", "User Age", "Total Consumption");
         System.out.println(BLUE + "---------------------------------------------------------------------------" + RESET);
-        userList.forEach((user,consumption)->{
-            System.out.printf(YELLOW +"%-15s | %-20s | %-10d | %-2d%n", user.getCin(), user.getName(), user.getAge(), consumption.size());
-        });
+        userList.forEach((user,consumption)->
+                System.out.printf(YELLOW +"%-15s | %-20s | %-10d | %-2d%n", user.getCin(), user.getName(), user.getAge(), consumption.size())
+        );
         System.out.println(BLUE + "---------------------------------------------------------------------------" + RESET);
     }
     public static void SortingUsersByConsumption(){
@@ -165,50 +163,59 @@ public class Main {
                 .forEach(entry -> {
                     User user = entry.getKey();
                     List<Consumption> consumptionList = entry.getValue();
-                    System.out.println(user.getCin() + "/" + user.getName() + "\n");
+                    displayUser(user);
                     double totalImpact = 0.;
                     for (Consumption c : consumptionList){
                         totalImpact+=userService.impactCal(c);
                     }
-                    System.out.println("total : "+totalImpact);
+                    System.out.println(GREEN + "Total Impact  : " + RESET + totalImpact);
+                    System.out.println(RED + "-----------------------------------------" + RESET);
                 });
     }
     public static void displayUserFilteredByImpact(int number){
         HashMap<User, List<Consumption>> userList = userService.findAll();
         userList.forEach((user, consumptionList) -> {
-            System.out.println(user.getCin() + "/" + user.getName() + "\n");
+
             List<Consumption> filteredConsumptions = consumptionList.stream()
                     .filter(consumption -> userService.impactCal(consumption) > number)
                     .collect(Collectors.toList());
+            if(filteredConsumptions.size() > 0) displayUser(user);
             displayConsumptionList(filteredConsumptions);
+            System.out.println(RED + "===================================================" + RESET);
         });
     }
     public static void displayUserInfo(){
         HashMap<User, List<Consumption>> userList = userService.findAll();
+
         userList.forEach((user,coumptionList)->{
-            System.out.println(user.getCin()+"/"+user.getName()+"\n");
+            displayUser(user);
             displayConsumptionList(coumptionList);
+            System.out.println(RED + "===================================================\n" + RESET);
         });
+    }
+    public static void displayUser(User user){
+        System.out.println(BLUE + "-----------------------------------------" + RESET);
+        System.out.println(GREEN + "User CIN     : " + RESET + user.getCin());
+        System.out.println(GREEN + "User Name    : " + RESET + user.getName());
+        System.out.println(GREEN + "User Age     : " + RESET + user.getAge());
+        System.out.println(BLUE + "-----------------------------------------" + RESET);
     }
 
     //===================================================  function to get Inactive User
     public static void displayInactiveUser(){
         HashMap<User, List<Consumption>> userList = userService.findAll();
-        LocalDate startDate;
-        LocalDate endDate;
-        System.out.println("Give me period : ");
-        System.out.print("Start Date (YYYY-MM-DD) : ");
-        startDate = LocalDate.parse(scanner.nextLine());
-        System.out.print("End Date (YYYY-MM-DD) : ");
-        endDate = LocalDate.parse(scanner.nextLine());
-        LocalDate finalStartDate = startDate;
-        LocalDate finalEndDate1 = endDate;
+        LocalDate[] period = getPeriod();
+        LocalDate finalStartDate = period[0];
+        LocalDate finalEndDate1 = period[1];
         userList.forEach((user, consumptionList)->{
             List<LocalDate> dateListRange = consumptionService.dateListRange(consumptionList);
             List<Consumption> newConsumationList = consumptionList.stream()
                     .filter(consumption -> DateValidator.isThisDateValid(dateListRange, finalStartDate, finalEndDate1)).collect(Collectors.toList());
             if(newConsumationList.isEmpty()){
-                System.out.println(user.getCin()+"/"+user.getName());
+                System.out.println(RED + "-----------------------------------------" + RESET);
+                displayUser(user);
+                System.out.println(RED + "User is inactive" + RESET+ " for the period from "+finalStartDate+" to "+finalEndDate1);
+                System.out.println(RED + "-----------------------------------------" + RESET);
             }
         });
     }
@@ -243,6 +250,18 @@ public class Main {
             double tempCarVal = scanner.nextDouble();
             impactService.saveImpact(tempStartDate,tempEndDate,tempCarVal,user,impactTypeOfConsumption,typeImpactDetail);
         },()-> System.out.println("user not found"));
+    }
+    public static LocalDate[] getPeriod() {
+        Scanner scanner = new Scanner(System.in);
+        LocalDate startDate;
+        LocalDate endDate;
+        System.out.println("Give me period: ");
+        System.out.print("Start Date (YYYY-MM-DD): ");
+        startDate = LocalDate.parse(scanner.nextLine());
+        System.out.print("End Date (YYYY-MM-DD): ");
+        endDate = LocalDate.parse(scanner.nextLine());
+
+        return new LocalDate[]{startDate, endDate};
     }
 
 
@@ -369,27 +388,33 @@ public class Main {
     }
 
     //display users information of consumption
-    public static void displayConsumptionList(List<Consumption> coumptionList){
-        coumptionList.forEach(consumption -> {
-            System.out.println("stat / end : "+consumption.getStartDate()+"/"+consumption.getEndDate());
-            System.out.println("impact type : "+consumption.getTypeOfConsumption());
-            System.out.println("impact Consumption = "+userService.impactCal(consumption));
-        });
+    public static void displayConsumptionList(List<Consumption> coumptionList) {
+        if (coumptionList.size() == 0) System.out.println(RED + "No Consumption Found !" + RESET);
+        else {
+            System.out.println(GREEN + String.format("%-15s %-15s %-15s %-20s", "Start Date", "End Date", "Impact Type", "Impact Value (KgCO2eq)") + RESET);
+            System.out.println(BLUE + "-----------------------------------------------------------------------" + RESET);
+            coumptionList.forEach(consumption ->
+                System.out.printf(
+                        CYAN + "%-15s %-15s %-15s %-20s" + RESET + "%n",
+                        consumption.getStartDate(),
+                        consumption.getEndDate(),
+                        consumption.getTypeOfConsumption(),
+                        userService.impactCal(consumption) + " KgCO2eq"
+                )
+            );
+            System.out.println(BLUE + "-----------------------------------------------------------------------" + RESET);
+        }
+
     }
 
     public static void CalculationAverageConsumption(){
         HashMap<User, List<Consumption>> userList = userService.findAll();
-        LocalDate startDate;
-        LocalDate endDate;
-          System.out.println("Give me period : ");
-        System.out.print("Start Date (YYYY-MM-DD) : ");
-        startDate = LocalDate.parse(scanner.nextLine());
-        System.out.print("End Date (YYYY-MM-DD) : ");
-        endDate = LocalDate.parse(scanner.nextLine());
+        LocalDate[] period = getPeriod();
         userList.forEach((user,consumptionList)->{
             System.out.println("=========================================");
-            System.out.println(user.getCin()+"/"+user.getName());
-            System.out.println("Average Consumption : "+averageByPeriod(consumptionList,startDate,endDate));
+            displayUser(user);
+            System.out.println(CYAN+"Average Consumption : "+averageByPeriod(consumptionList,period[0],period[1])+ " KgCO2eq"+RESET);
+            System.out.println(RED + "-----------------------------------------" + RESET);
         });
     }
     public static  Double averageByPeriod(List<Consumption> consumptions, LocalDate start , LocalDate endDate) {
