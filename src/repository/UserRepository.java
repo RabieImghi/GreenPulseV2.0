@@ -65,6 +65,7 @@ public class UserRepository {
     public Optional<User> update(User user){
         String smt = "UPDATE users SET name = ?, age = ? WHERE cin = ?";
         try {
+            connection.setAutoCommit(false);
             PreparedStatement preparedStatement = this.connection.prepareStatement(smt);
             preparedStatement.setString(1,user.getName());
             preparedStatement.setInt(2,user.getAge());
@@ -73,6 +74,17 @@ public class UserRepository {
             if (rowsUpdated > 0) System.out.println("user updated with success");
         }catch (SQLException e){
             e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        }finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return  Optional.of(user);
     }
@@ -80,12 +92,24 @@ public class UserRepository {
         Optional<User> user = findById(cin);
         String stmDelete = "DELETE FROM users WHERE cin = ?";
         try {
+            connection.setAutoCommit(false);
             PreparedStatement preparedStatement = this.connection.prepareStatement(stmDelete);
             preparedStatement.setString(1,cin);
             preparedStatement.executeUpdate();
             System.out.println("User deleted with success");
         }catch (Exception e){
             System.out.println("Error In Delete User : "+ e.getMessage());
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        }   finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return user;
     }
