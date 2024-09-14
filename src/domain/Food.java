@@ -6,8 +6,8 @@ import java.time.LocalDate;
 
 public class Food extends Consumption {
     private int id;
-    private double weight;
-    private String typeFood;
+    private final double weight;
+    private final String typeFood;
     Consumption consumption;
 
     public Food(LocalDate startDate, LocalDate endDate, double carbon, TypeOfConsumption typeOfConsumption, double weight, String typeFood) {
@@ -43,17 +43,11 @@ public class Food extends Consumption {
         return weight;
     }
 
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
 
     public String getTypeFood() {
         return typeFood;
     }
 
-    public void setTypeFood(String typeFood) {
-        this.typeFood = typeFood;
-    }
 
     @Override
     public double impactCal(Double consumption) {

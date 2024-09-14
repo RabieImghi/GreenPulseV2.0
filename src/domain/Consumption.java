@@ -31,10 +31,6 @@ public class Consumption {
         return typeOfConsumption;
     }
 
-    public void setTypeOfConsumption(TypeOfConsumption typeOfConsumption) {
-        this.typeOfConsumption = typeOfConsumption;
-    }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -43,25 +39,16 @@ public class Consumption {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
 
     public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
 
     public double getCarbon() {
         return carbon;
     }
 
-    public void setCarbon(double carbon) {
-        this.carbon = carbon;
-    }
     public void setUser(User user){
         this.user = user;
     }

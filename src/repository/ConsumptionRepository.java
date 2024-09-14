@@ -21,6 +21,7 @@ public class ConsumptionRepository {
     public Integer save(LocalDate start, LocalDate end, double carbon,String cin,String typeImpact){
         int idConsumption=0;
         try {
+            connection.setAutoCommit(false);
             String saveConsumption = "INSERT INTO consumptions (start_date, end_date,carbon_consumption,user_cin,type_impact) VALUES (?,?,?,?,?)";
             PreparedStatement preparedSaveConsumption = this.connection.prepareStatement(saveConsumption, PreparedStatement.RETURN_GENERATED_KEYS);
             preparedSaveConsumption.setDate(1, java.sql.Date.valueOf(start));
@@ -40,6 +41,17 @@ public class ConsumptionRepository {
             }
         }catch (SQLException e){
             System.err.println("add Consumption error : "+e.getMessage());
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        }finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return idConsumption;
 

@@ -1,11 +1,9 @@
 package service;
 public class MainService {
     public static final String RESET = "\u001B[0m";
-    public static final String RED = "\u001B[31m";
     public static final String GREEN = "\u001B[32m";
     public static final String YELLOW = "\u001B[33m";
     public static final String BLUE = "\u001B[34m";
-    public static final String CYAN = "\u001B[36m";
     public static final String PURPLE = "\u001B[35m";
 
 
@@ -65,15 +63,5 @@ public class MainService {
         System.out.println(BLUE + "|===========================================|" + RESET);
         System.out.print(GREEN + "Enter your option: " + RESET);
     }
-    public static void displayMenuUserUpdate(){
-        System.out.print(
-                "\n|=======================================|" +
-                "\n| Select an option please :             |" +
-                "\n|=======================================|"+
-                "\n| 1 : Update User Information           |" +
-                "\n| 2 : Update Carbon Consumption         |" +
-                "\n| 3 : Close                             |" +
-                "\n|=======================================|" +
-                "\nEntre your option : ");
-    }
+
 }

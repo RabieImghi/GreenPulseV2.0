@@ -21,6 +21,7 @@ public class UserRepository {
     public Optional<User> save(User user){
         String smt = "INSERT INTO users (cin,name,age) VALUES (?,?,?)";
         try {
+            connection.setAutoCommit(false);
             PreparedStatement preparedStatement = this.connection.prepareStatement(smt);
             preparedStatement.setString(1,user.getCin());
             preparedStatement.setString(2,user.getName());
@@ -29,6 +30,17 @@ public class UserRepository {
             if(rowsInserted > 0) return  Optional.of(user);
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        }finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return  Optional.of(user);
     }

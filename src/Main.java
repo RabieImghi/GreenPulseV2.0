@@ -28,18 +28,22 @@ public class Main {
         do {
             MainService.displayMenuUser();
             String option = scanner.nextLine();
+
             switch (option) {
                 case "1": {
+                    clearConsole();
                     Optional<User> functionReturn = saveUser();
                     functionReturn.ifPresent(System.out::println);
                 }
                 break;
                 case "2": {
+                    clearConsole();
                     displayUserCin();
                     updateUser();
                 }
                 break;
                 case "3": {
+                    clearConsole();
                     displayUserCin();
                     Optional<User> user ;
                     String cin;
@@ -54,15 +58,16 @@ public class Main {
                     } while (user.isEmpty() && !cin.equals("quite"));
                 }
                 break;
-                case "4": displayUserInfo(); break;
+                case "4": clearConsole(); displayUserInfo(); break;
                 case "5": {
+                    clearConsole();
                     displayUserCin();
                     saveConsumption();
                 }break;
-                case "6": displayUserFilteredByImpact(3000); break;
-                case "7": SortingUsersByConsumption(); break;
-                case "8": displayInactiveUser(); break;
-                case "9": CalculationAverageConsumption(); break;
+                case "6": clearConsole(); displayUserFilteredByImpact(3000); break;
+                case "7": clearConsole(); SortingUsersByConsumption(); break;
+                case "8": clearConsole(); displayInactiveUser(); break;
+                case "9": clearConsole(); CalculationAverageConsumption(); break;
                 case "10": optionsEnd = true; break;
                 default:
                     System.out.println("Invalid option, please try again.");
@@ -425,6 +430,18 @@ public class Main {
                     .filter(e -> DateValidator.isThisDateValid(dates,e.getStartDate(), e.getEndDate()))
                     .mapToDouble(e-> userService.impactCal(e)).sum()) / dates.size();
         }else return 0.;
+    }
+    public static void clearConsole() {
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
