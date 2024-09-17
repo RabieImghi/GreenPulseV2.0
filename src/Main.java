@@ -64,7 +64,7 @@ public class Main {
                     displayUserCin();
                     saveConsumption();
                 }break;
-                case "6": clearConsole(); displayUserFilteredByImpact(3000); break;
+                case "6": clearConsole(); displayUserFilteredByImpact(80000); break;
                 case "7": clearConsole(); SortingUsersByConsumption(); break;
                 case "8": clearConsole(); displayInactiveUser(); break;
                 case "9": clearConsole(); CalculationAverageConsumption(); break;
@@ -79,31 +79,38 @@ public class Main {
     public static Optional<User> saveUser() {
         String tempCin;
         String tempName;
+        String addUser;
         boolean userCinExist;
-
-        do {
-            System.out.print(CYAN + "Give me your Cin : " + RESET);
-            tempCin = scanner.nextLine();
-            userCinExist = userService.userExist(tempCin);
-            if (userCinExist) System.out.println(RED + "User CIN Already Exists" + RESET);
-        } while (userCinExist);
-
-        System.out.print(CYAN + "Give Me Your Name : " + RESET);
-        tempName = scanner.nextLine();
-
-        int tempAge = getAgeUser();
-        User user = new User(tempCin, tempName, tempAge);
-
-        boolean userSaved = userService.save(user);
         Optional<User> optionalUser;
+        do {
 
-        if (userSaved) {
-            optionalUser = Optional.of(user);
-            System.out.println(GREEN + "User successfully saved!" + RESET);
-        } else {
-            optionalUser = Optional.empty();
-            System.out.println(RED + "Failed to save user." + RESET);
-        }
+            do {
+                System.out.print(CYAN + "Give me your CIN: " + RESET);
+                tempCin = scanner.nextLine();
+                userCinExist = userService.userExist(tempCin);
+                if (userCinExist) System.out.println(RED + "User CIN Already Exists" + RESET);
+            } while (userCinExist);
+
+            System.out.print(CYAN + "Give me your Name: " + RESET);
+            tempName = scanner.nextLine();
+
+            int tempAge = getAgeUser();
+            User user = new User(tempCin, tempName, tempAge);
+
+            boolean userSaved = userService.save(user);
+
+            if (userSaved) {
+                optionalUser = Optional.of(user);
+                System.out.println(GREEN + "User successfully saved!" + RESET);
+            } else {
+                optionalUser = Optional.empty();
+                System.out.println(RED + "Failed to save user." + RESET);
+            }
+            System.out.println("Do you want to add a new user (y/n)?");
+            addUser = scanner.nextLine();
+
+        } while (addUser.equals("y"));
+
 
         return optionalUser;
     }
@@ -180,13 +187,16 @@ public class Main {
     public static void displayUserFilteredByImpact(int number){
         HashMap<User, List<Consumption>> userList = userService.findAll();
         userList.forEach((user, consumptionList) -> {
+            double totalConsumption = consumptionList.stream()
+                    .mapToDouble(consumption -> userService.impactCal(consumption)).sum();
 
-            List<Consumption> filteredConsumptions = consumptionList.stream()
-                    .filter(consumption -> userService.impactCal(consumption) > number)
-                    .collect(Collectors.toList());
-            if(filteredConsumptions.size() > 0) displayUser(user);
-            displayConsumptionList(filteredConsumptions);
-            System.out.println(RED + "===================================================" + RESET);
+            if(totalConsumption > number){
+                displayUser(user);
+                displayConsumptionList(consumptionList);
+                System.out.println(RED + "===================================================" + RESET);
+            }
+
+
         });
     }
     public static void displayUserInfo(){
